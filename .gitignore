@@ -1,3 +1,5 @@
+scripts/logs-real
+scripts/logs-small
 node_modules
 .env
 .babelrc
