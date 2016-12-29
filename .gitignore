@@ -1,5 +1,6 @@
 scripts/logs-real
 scripts/logs-small
+scripts/downloadLogsMy.sh
 node_modules
 .env
 .babelrc
