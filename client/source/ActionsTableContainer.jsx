@@ -75,7 +75,13 @@ export default class ActionsTableContainer extends React.Component {
         <p>Selected is set to: {this.state.selected}.</p>
         <Switch options={this.state.options} selected={this.state.selected} updateSelected={this.updateSelected} />
         <ActivityTable initialActivities={this.state.data} />
-        <Griddle results={this.state.data} showFilter columns={['date', 'email', 'event', 'object']} />
+        <Griddle
+          results={this.state.data}
+          showFilter
+          columns={['date', 'email', 'event', 'object']}
+          useGriddleStyles={false}
+          tableClassName="table table-bordered table-striped table-hoverd"
+        />
       </div>
     );
   }

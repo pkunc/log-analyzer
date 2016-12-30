@@ -1,7 +1,10 @@
+scripts/logs/*.txt
+scripts/logs/*.gz
 scripts/logs-real
 scripts/logs-small
 scripts/downloadLogsMy.sh
 node_modules
+yarn.lock
 .env
 .babelrc
 .eslintrc
