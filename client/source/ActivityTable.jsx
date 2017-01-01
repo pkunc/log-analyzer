@@ -31,7 +31,6 @@ export default class ActivityTable extends React.Component {
     this.state = {
       activities: this.props.initialActivities,
     };
-    // console.log(`[TABLE] Initial state: ${JSON.stringify(this.state.activities)}`);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -42,17 +41,10 @@ export default class ActivityTable extends React.Component {
 
   render() {
     const rows = [];
-    /*
-    this.state.activities.forEach(function (activity) {
-      rows.push(<ActivityRow {...activity} key={activity._id} />);
-    });
-    */
     /* eslint no-underscore-dangle: ["warn", { "allow": ["_id"] }] */
     this.state.activities.forEach((activity) => {
       rows.push(<ActivityRow {...activity} key={activity._id} />);
     });
-
-    // console.log(`[TABLE] State before render: ${JSON.stringify(this.state.activities)}`);
 
     return (
       <table className="table table-striped">

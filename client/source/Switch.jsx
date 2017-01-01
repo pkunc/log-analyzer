@@ -12,13 +12,8 @@ export default class Switch extends React.Component {
   constructor(props) {
     super(props);
     console.log(`[switch] Initial props: ${JSON.stringify(this.props)}`);
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.renderOption = this.renderOption.bind(this);
-  }
-
-  handleSubmit() {
-    // placeholder
   }
 
   handleChange(event) {
@@ -46,7 +41,7 @@ export default class Switch extends React.Component {
   render() {
     return (
       <div>
-        <form onSubmit={this.handleSubmit} className="form-inline">
+        <form className="form-inline">
           <div className="form-group">
             {this.props.options.map(option => this.renderOption(option))}
           </div>

@@ -2,12 +2,23 @@
 
 import React from 'react';
 import Switch from './Switch';
-import ActivityTable from './ActivityTable';
 
 const Griddle = require('griddle-react');
 const DB = require('../../lib/dbTools.js');
 const access = require('../../lib/dbAccess.js');
 const co = require('co');
+
+class DateColumn extends React.Component {
+  static propTypes = {
+    data: React.PropTypes.string.isRequired,
+  }
+  render() {
+    const newDate = new Date(this.props.data);
+    return (
+      <div>{newDate.toString()}</div>
+    );
+  }
+}
 
 export default class ActionsTableContainer extends React.Component {
 
@@ -71,15 +82,35 @@ export default class ActionsTableContainer extends React.Component {
   }
 
   render() {
+    const columnMetadata = [
+      {
+        columnName: 'date',
+        displayName: 'Date',
+        customComponent: DateColumn,
+      },
+      {
+        columnName: 'email',
+        displayName: 'Who',
+      },
+      {
+        columnName: 'event',
+        displayName: 'Action',
+      },
+      {
+        columnName: 'object',
+        displayName: 'Object',
+      },
+    ];
     return (
       <div>
         <p>Selected is set to: {this.state.selected}.</p>
         <Switch options={this.state.options} selected={this.state.selected} updateSelected={this.updateSelected} />
-        <ActivityTable initialActivities={this.state.data} />
         <Griddle
           results={this.state.data}
+          resultsPerPage={20}
           showFilter
           columns={['date', 'email', 'event', 'object']}
+          columnMetadata={columnMetadata}
           useGriddleStyles={false}
           tableClassName="table table-bordered table-striped table-hoverd"
         />
