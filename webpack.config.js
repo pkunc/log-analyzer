@@ -19,6 +19,8 @@ const config = {
 
   target: 'web',
   // externals: [nodeExternals()],
+  // devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-source-map',
   module: {
     loaders: [
       {

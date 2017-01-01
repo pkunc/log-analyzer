@@ -10,3 +10,4 @@ yarn.lock
 .eslintrc
 .jscsrc
 .jshintrc
+npm-debug.log
