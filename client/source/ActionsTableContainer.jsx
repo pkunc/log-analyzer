@@ -28,7 +28,7 @@ export default class ActionsTableContainer extends React.Component {
 
   componentDidMount() {
     co(this.initDatabase('logs')).catch(onerror);
-    console.log(`[table.didMount] Will Mount db: ${JSON.stringify(this.state.db)}`);
+    console.log('[table.didMount] Will Mount db');
   }
 
   * initDatabase(dbname) {
@@ -60,12 +60,13 @@ export default class ActionsTableContainer extends React.Component {
     console.log(`[table.fetchData] Will fetch data from database "${this.state.db.config.db}" for string "${selected}"`);
     const data = yield co(access.getActivity(this.state.db, selected)).catch(onerror);
     // console.log(`[table.fetchData] Fetched data: ${JSON.stringify(data)}`);
-    this.setState({ selected, data });
+    this.setState({ data });
     // console.log(`[table.fetchData] this.state.data is now: ${JSON.stringify(this.state.data)}`);
   }
 
   updateSelected(selected) {
     console.log(`[table.updateSelected] Setting selected to: ${selected}`);
+    this.setState({ selected });
     co(this.fetchData(selected)).catch(onerror);
   }
 
