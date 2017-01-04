@@ -18,6 +18,8 @@ const access = require('../lib/dbAccess.js');
   */
 require('dotenv').config({ path: '../.env' });
 
+let dirName = '';     // directory name from command line attributes
+
 /**
  * Supporting functions
  */
@@ -78,7 +80,7 @@ function* main() {
 
   // read log filenames into an array
   let totalInserted = 0;      // total number of objects sent to DB
-  const logDir = './logs-small/';
+  const logDir = `./${dirName}/`;
   const files = fs.readdirSync(logDir);
 
   // parse each file in the array and insert into database
@@ -95,5 +97,15 @@ function* main() {
 
   console.log(chalk.blue(`Program ending. Total objects inserted: ${totalInserted}`));
 }
+
+const args = process.argv.slice(2);
+dirName = args[0];
+if (!dirName) {
+  process.stdout.write('Please provide dir name as a parameter\n');
+  process.stdout.write('Example: ./parse.js logs\n');
+  process.stdout.write('Exiting the process.\n');
+  process.exit();
+}
+console.log(`Will parse logs in "${dirName}" directory.`);
 
 co(main).catch(onerror);
