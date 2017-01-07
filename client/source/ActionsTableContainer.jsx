@@ -103,8 +103,9 @@ export default class ActionsTableContainer extends React.Component {
     ];
     return (
       <div>
-        <p>Selected is set to: {this.state.selected}.</p>
+        <p>Showing activities for user: <em>{this.state.selected}</em></p>
         <Switch options={this.state.options} selected={this.state.selected} updateSelected={this.updateSelected} />
+        <br />
         <Griddle
           results={this.state.data}
           resultsPerPage={20}
