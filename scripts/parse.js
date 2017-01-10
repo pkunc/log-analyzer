@@ -17,6 +17,7 @@ const parse = require('../lib/parseTools.js');
 require('dotenv').config({ path: '../.env' });
 
 let dirName = '';     // directory name from command line attributes
+let doWrites = false; // true = save parsed data into db, false = just dry run, no inserd into db
 
 /**
  * Supporting functions
@@ -77,7 +78,7 @@ function* main() {
   for (const file of files) {
     const filePath = logDir + file;
     console.log(`[loop] Working on file ${filePath} which is type: ${parse.getLogType(filePath)}`);
-    const rowsInserted = yield co(parse.parseLogFile(filePath, dbLogs, false)).catch(onerror);
+    const rowsInserted = yield co(parse.parseLogFile(filePath, dbLogs, doWrites)).catch(onerror);
     totalInserted += rowsInserted;
   }
 
@@ -88,7 +89,14 @@ const args = process.argv.slice(2);
 dirName = args[0];
 if (!dirName) {
   process.stdout.write('Please provide dir name as a parameter\n');
-  process.stdout.write('Example: ./parse.js logs\n');
+  process.stdout.write('Example: ./parse.js logs true\n');
+  process.stdout.write('Exiting the process.\n');
+  process.exit();
+}
+doWrites = args[1];
+if (!doWrites) {
+  process.stdout.write('Please select chose whether to save parsed data into database (true) or not (false)\n');
+  process.stdout.write('Example: ./parse.js logs true\n');
   process.stdout.write('Exiting the process.\n');
   process.exit();
 }
