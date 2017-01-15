@@ -22,6 +22,17 @@ export default class Switch extends React.Component {
     this.props.updateSelected(newSelected);
   }
 
+  formatOption(option) {
+    const atPosition = option.indexOf('@');
+    if (atPosition === -1) {
+      return option;
+    } else if (atPosition === 0) {
+      return option;
+    }
+    const name = option.slice(0, atPosition);
+    return name;
+  }
+
   renderOption(option) {
     const isChecked = (this.props.selected === option);
     return (
@@ -33,7 +44,7 @@ export default class Switch extends React.Component {
           id={option}
           onChange={this.handleChange}
         />
-        {option}
+        {this.formatOption(option)}
       </label>
     );
   }

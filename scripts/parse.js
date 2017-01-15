@@ -95,7 +95,7 @@ if (!dirName) {
 }
 doWrites = args[1];
 if (!doWrites) {
-  process.stdout.write('Please select chose whether to save parsed data into database (true) or not (false)\n');
+  process.stdout.write('Please chose whether to save parsed data into database (true) or not (false)\n');
   process.stdout.write('Example: ./parse.js logs true\n');
   process.stdout.write('Exiting the process.\n');
   process.exit();
