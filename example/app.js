@@ -42,22 +42,24 @@ function* main() {
   // Test for using DB views for selected user
   // const activities = yield co(access.getUserActions(dbLogs, 'steve.lievens@silvergreen.eu')).catch(onerror);
 
-  // Test for using DB index for all users
-  const activities = yield co(access.getUserActions(dbLogs)).catch(onerror);
+  // Test for using DB views for all users
+  const userActivities = yield co(access.getUserActions(dbLogs)).catch(onerror);
 
   // Print all obtained activities
-  console.log(activities);
+  console.log(userActivities);
 
   // Print all obtained activities and do a simple formatting of the output
-  try {
-    console.log(chalk.green(`Found ${activities.length} documents`));
-    for (let i = 0; i < activities.length; i += 1) {
-      // console.log('  Doc object: %s', activities[i].object);
-      console.log(`  Key: ${activities[i].key} ${activities[i].value}`);
-    }
-  } catch (err) {
-    console.log(`ERROR: ${err.code}`);
-    throw err;
+  console.log(chalk.green(`Found ${userActivities.length} documents`));
+  for (let i = 0; i < userActivities.length; i += 1) {
+    // console.log('  Doc object: %s', userActivities[i].object);
+    console.log(`  ${userActivities[i].key} ... ${userActivities[i].value}`);
+  }
+
+  // Test for using DB views for all activities
+  const ativitiesTypes = yield co(access.getActions(dbLogs)).catch(onerror);
+  console.log(chalk.green(`Found ${ativitiesTypes.length} documents`));
+  for (let i = 0; i < ativitiesTypes.length; i += 1) {
+    console.log(`  ${ativitiesTypes[i].key} ... ${ativitiesTypes[i].value}`);
   }
 
   console.log(chalk.blue('Program ending.'));
