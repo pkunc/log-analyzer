@@ -2,8 +2,8 @@
 Download activity log files from Connections Cloud, parse them and upload to Cloudant database for future processing.
 ## Purpose
 IBM Connections Cloud offers organisations two ways how to monitor and measure usage of its services:
-* Metrics. Allows Community owners or global admins see some selected statistics in a table or simple chart UI.
-* Journal logs. Each user activity is logged and stored in journal text files, available to admins via SFTP.
+*   Metrics. Allows Community owners or global admins see some selected statistics in a table or simple chart UI.
+*   Journal logs. Each user activity is logged and stored in journal text files, available to admins via SFTP.
 So *Metrics* has web UI but shows only a small subset of data, and *Journal logs* have all the data, but no user interface.
 
 ## What is inside?

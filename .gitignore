@@ -3,6 +3,7 @@ scripts/logs/*.gz
 scripts/logs-real
 scripts/logs-small
 scripts/downloadLogsMy.sh
+client/build/bundle.js
 node_modules
 yarn.lock
 .env

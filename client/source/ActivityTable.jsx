@@ -1,5 +1,3 @@
-// 'use strict';
-
 import React from 'react';
 
 class ActivityRow extends React.Component {

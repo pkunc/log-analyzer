@@ -1,19 +1,17 @@
 #!/usr/bin/env node
 
-// 'use strict';
-
 /**
- * Dependencies
+ * Command line application that parses Connections Cloud logs
+ * and pushes objects into Cloudant database.
+ * @author Petr Kunc <petr_kunc@cz.ibm.com>
  */
+
 const fs = require('fs');
 const co = require('co');
 const chalk = require('chalk');
 const DB = require('../lib/dbTools.js');
 const parse = require('../lib/parseTools.js');
 
-/**
-  * Config
-  */
 require('dotenv').config({ path: '../.env' });
 
 let dirName = '';     // directory name from command line attributes
@@ -36,7 +34,7 @@ function onerror(err) {
   if (err.reason) {
     console.log(chalk.red(`[onerror] ERROR reason = "${err.reason}"`));
   }
-  /* throw err; */
+  // throw err;
 }
 
 /**

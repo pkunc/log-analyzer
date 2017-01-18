@@ -1,16 +1,12 @@
 // const webpack = require('webpack');
 const path = require('path');
-// let nodeExternals = require('webpack-node-externals');
+
 const BUILD_DIR = path.resolve(__dirname, 'client/build');
-// const BUILD_DIR = path.resolve(__dirname + '/client/build');
 const APP_DIR = path.resolve(__dirname, 'client/source');
-// const APP_DIR = path.resolve(__dirname + '/client/source');
 const Dotenv = require('dotenv-webpack');
 
 const config = {
-  // entry: ['babel-polyfill', APP_DIR + '/index.jsx'],
   entry: ['babel-polyfill', `${APP_DIR}/index.jsx`],
-  // entry: [APP_DIR + '/index.jsx'],
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js',
@@ -18,22 +14,14 @@ const config = {
   },
 
   target: 'web',
-  // externals: [nodeExternals()],
   // devtool: 'cheap-module-eval-source-map',
   devtool: 'eval-source-map',
   module: {
     loaders: [
       {
-        // test: /\/app\/.+\.jsx$/,
-        // Only run `.js` and `.jsx` files through Babel
         test: /\.jsx?$/,
-
-        // Skip any files outside of your project's source directory
-        // include: [APP_DIR],
-
         exclude: /node_modules/,
         loader: 'babel-loader',
-        // query: { presets: ['react', 'es2015'] },
       },
       {
         test: /\.json$/,

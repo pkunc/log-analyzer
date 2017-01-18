@@ -1,5 +1,3 @@
-// 'use strict';
-
 import React from 'react';
 
 export default class Switch extends React.Component {
@@ -11,7 +9,6 @@ export default class Switch extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log(`[switch] Initial props: ${JSON.stringify(this.props)}`);
     this.handleChange = this.handleChange.bind(this);
     this.renderOption = this.renderOption.bind(this);
   }
