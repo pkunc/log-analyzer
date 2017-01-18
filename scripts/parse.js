@@ -1,22 +1,21 @@
 #!/usr/bin/env node
 
-// 'use strict';
-
 /**
- * Dependencies
+ * Command line application that parses Connections Cloud logs
+ * and pushes objects into Cloudant database.
+ * @author Petr Kunc <petr_kunc@cz.ibm.com>
  */
+
 const fs = require('fs');
 const co = require('co');
-// const promisify = require('es6-promisify');
 const chalk = require('chalk');
 const DB = require('../lib/dbTools.js');
 const parse = require('../lib/parseTools.js');
-const access = require('../lib/dbAccess.js');
 
-/**
-  * Config
-  */
 require('dotenv').config({ path: '../.env' });
+
+let dirName = '';     // directory name from command line attributes
+let doWrites = false; // true = save parsed data into db, false = just dry run, no inserd into db
 
 /**
  * Supporting functions
@@ -35,7 +34,7 @@ function onerror(err) {
   if (err.reason) {
     console.log(chalk.red(`[onerror] ERROR reason = "${err.reason}"`));
   }
-  /* throw err; */
+  // throw err;
 }
 
 /**
@@ -45,55 +44,60 @@ function* main() {
   console.log(chalk.blue('Program starting'));
 
   // connect to the database
-  // const dbLogs = yield co(DB.connectDb('logs')).catch(onerror);
   const dbLogs = yield* DB.connectDb('logs');
 
   // create indexes
-  // yield co(DB.createIndexes(dbLogs)).catch(onerror);
   yield* DB.createIndexes(dbLogs);
 
   // print indexes
-  // yield co(DB.printAllIndexes(dbLogs)).catch(onerror);
   yield* DB.printAllIndexes(dbLogs);
 
   // create views
-  // yield co(DB.createViews(dbLogs)).catch(onerror);
   yield* DB.createViews(dbLogs);
 
   // print views
-  // yield co(DB.printViews(dbLogs)).catch(onerror);
   yield* DB.printViews(dbLogs);
 
   // set CORS
-  // yield co(DB.setCORS()).catch(onerror);
   yield* DB.setCORS();
 
   // print CORS info
-  // yield co(DB.printCORS()).catch(onerror);
   yield* DB.printCORS();
 
   // print databases
-  // yield co(DB.printAllDatabases()).catch(onerror);
   yield* DB.printAllDatabases();
 
   // read log filenames into an array
   let totalInserted = 0;      // total number of objects sent to DB
-  const logDir = './logs-small/';
+  const logDir = `./${dirName}/`;
   const files = fs.readdirSync(logDir);
 
   // parse each file in the array and insert into database
-
   for (const file of files) {
     const filePath = logDir + file;
     console.log(`[loop] Working on file ${filePath} which is type: ${parse.getLogType(filePath)}`);
-    const rowsInserted = yield co(parse.parseLogFile(filePath, dbLogs)).catch(onerror);
+    const rowsInserted = yield co(parse.parseLogFile(filePath, dbLogs, doWrites)).catch(onerror);
     totalInserted += rowsInserted;
   }
 
-  const activities = yield co(access.getActivity(dbLogs, 'steve.lievens@silvergreen.eu')).catch(onerror);
-  console.log(activities);
-
   console.log(chalk.blue(`Program ending. Total objects inserted: ${totalInserted}`));
 }
+
+const args = process.argv.slice(2);
+dirName = args[0];
+if (!dirName) {
+  process.stdout.write('Please provide dir name as a parameter\n');
+  process.stdout.write('Example: ./parse.js logs true\n');
+  process.stdout.write('Exiting the process.\n');
+  process.exit();
+}
+doWrites = args[1];
+if (!doWrites) {
+  process.stdout.write('Please chose whether to save parsed data into database (true) or not (false)\n');
+  process.stdout.write('Example: ./parse.js logs true\n');
+  process.stdout.write('Exiting the process.\n');
+  process.exit();
+}
+console.log(`Will parse logs in "${dirName}" directory.`);
 
 co(main).catch(onerror);
