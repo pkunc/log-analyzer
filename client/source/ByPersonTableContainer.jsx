@@ -37,34 +37,34 @@ export default class ByPersonTableContainer extends React.Component {
   }
 
   * initDatabase(dbname) {
-    console.log('[table.initDb] Init DB starting');
+    console.log('[byPerson.initDb] Init DB starting');
 
     // connect to the database
     const db = yield co(DB.connectDb(dbname)).catch(onerror);
 
     this.setState({ db });
-    console.log(`[table.initDb] Mounted db: ${JSON.stringify(db.config.db)}`);
+    console.log(`[byPerson.initDb] Mounted db: ${JSON.stringify(db.config.db)}`);
 
     // fetch names of all users mentioned in database
-    // console.log(`[table.fetchUsers] Will fetch users from database "${this.state.db.config.db}"`);
+    // console.log(`[byPerson.fetchUsers] Will fetch users from database "${this.state.db.config.db}"`);
     const result = yield co(access.getUserActions(this.state.db)).catch(onerror);
-    // console.log(`[table.fetchUsers] Fetched results: "${JSON.stringify(result)}"`);
+    // console.log(`[byPerson.fetchUsers] Fetched results: "${JSON.stringify(result)}"`);
     const options = result.map(({ key, value }) => key);
-    // console.log(`[table.fetchUsers] Fetched users: "${JSON.stringify(options)}"`);
+    // console.log(`[byPerson.fetchUsers] Fetched users: "${JSON.stringify(options)}"`);
     this.setState({ options });
-    console.log('[table.initDb] Init DB ending');
+    console.log('[byPerson.initDb] Init DB ending');
   }
 
   * fetchData(selected) {
-    console.log(`[table.fetchData] Will fetch data from database "${this.state.db.config.db}" for string "${selected}"`);
+    console.log(`[byPerson.fetchData] Will fetch data from database "${this.state.db.config.db}" for string "${selected}"`);
     const data = yield co(access.getActivity(this.state.db, selected)).catch(onerror);
-    // console.log(`[table.fetchData] Fetched data: ${JSON.stringify(data)}`);
+    // console.log(`[byPerson.fetchData] Fetched data: ${JSON.stringify(data)}`);
     this.setState({ data });
-    // console.log(`[table.fetchData] this.state.data is now: ${JSON.stringify(this.state.data)}`);
+    // console.log(`[byPerson.fetchData] this.state.data is now: ${JSON.stringify(this.state.data)}`);
   }
 
   updateSelected(selected) {
-    console.log(`[table.updateSelected] Setting selected to: ${selected}`);
+    console.log(`[byPerson.updateSelected] Setting selected to: ${selected}`);
     this.setState({ selected });
     co(this.fetchData(selected)).catch(onerror);
   }
