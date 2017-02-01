@@ -51,20 +51,18 @@ export default class MenuTabs extends React.Component {
     return (
       <nav>
         <ul className="nav nav-tabs">
-          { this.props.tabList.map((tab) => {
-            return (
-              <MenuTab
-                key={tab.id}
-                label={tab.label}
-                id={tab.id}
-                isSelected={(this.props.currentMenuTab === tab.id)}
-                handleClick={this.handleClick}
-              />
-            );
-          })
-          }
+          { this.props.tabList.map(tab => (
+            <MenuTab
+              key={tab.id}
+              label={tab.label}
+              id={tab.id}
+              isSelected={(this.props.currentMenuTab === tab.id)}
+              handleClick={this.handleClick}
+            />
+          ))}
         </ul>
       </nav>
     );
   }
+
 }
