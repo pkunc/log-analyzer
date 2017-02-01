@@ -2,7 +2,6 @@ import React from 'react';
 import Switch from './Switch';
 
 const Griddle = require('griddle-react');
-const DB = require('../../lib/dbTools.js');
 const access = require('../../lib/dbAccess.js');
 const co = require('co');
 
@@ -19,45 +18,41 @@ class DateColumn extends React.Component {
 }
 
 export default class ByPersonTableContainer extends React.Component {
+  static propTypes = {
+    db: React.PropTypes.object.isRequired,
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       selected: '',
-      db: undefined,
       data: [],
       options: [],
     };
     this.updateSelected = this.updateSelected.bind(this);
-    this.initDatabase = this.initDatabase.bind(this);
+    this.fetchOptions = this.fetchOptions.bind(this);
     this.fetchData = this.fetchData.bind(this);
   }
 
   componentDidMount() {
-    co(this.initDatabase('logs')).catch(onerror);
+    co(this.fetchOptions()).catch(onerror);
   }
 
-  * initDatabase(dbname) {
-    console.log('[byPerson.initDb] Init DB starting');
-
-    // connect to the database
-    const db = yield co(DB.connectDb(dbname)).catch(onerror);
-
-    this.setState({ db });
-    console.log(`[byPerson.initDb] Mounted db: ${JSON.stringify(db.config.db)}`);
-
+  * fetchOptions() {
+    console.log('[byPerson.fetchOptions] Init DB starting');
     // fetch names of all users mentioned in database
-    // console.log(`[byPerson.fetchUsers] Will fetch users from database "${this.state.db.config.db}"`);
-    const result = yield co(access.getUserActions(this.state.db)).catch(onerror);
-    // console.log(`[byPerson.fetchUsers] Fetched results: "${JSON.stringify(result)}"`);
+    // console.log(`[byPerson.fetchOptions] Will fetch users from database "${this.props.db.config.db}"`);
+    const result = yield co(access.getUserActions(this.props.db)).catch(onerror);
+    // console.log(`[byPerson.fetchOptions] Fetched results: "${JSON.stringify(result)}"`);
     const options = result.map(({ key, value }) => key);
-    // console.log(`[byPerson.fetchUsers] Fetched users: "${JSON.stringify(options)}"`);
+    // console.log(`[byPerson.fetchOptions] Fetched users: "${JSON.stringify(options)}"`);
     this.setState({ options });
-    console.log('[byPerson.initDb] Init DB ending');
+    console.log('[byPerson.fetchOptions] Init DB ending');
   }
 
   * fetchData(selected) {
-    console.log(`[byPerson.fetchData] Will fetch data from database "${this.state.db.config.db}" for string "${selected}"`);
-    const data = yield co(access.getActivity(this.state.db, selected)).catch(onerror);
+    console.log(`[byPerson.fetchData] Will fetch data from database "${this.props.db.config.db}" for string "${selected}"`);
+    const data = yield co(access.getActivity(this.props.db, selected)).catch(onerror);
     // console.log(`[byPerson.fetchData] Fetched data: ${JSON.stringify(data)}`);
     this.setState({ data });
     // console.log(`[byPerson.fetchData] this.state.data is now: ${JSON.stringify(this.state.data)}`);

@@ -3,17 +3,36 @@ import MenuTabsContainer from './MenuTabsContainer';
 import ByPersonTableContainer from './ByPersonTableContainer';
 import ByActivityTableContainer from './ByActivityTableContainer';
 
+const DB = require('../../lib/dbTools.js');
+const co = require('co');
+
 export default class LogAnalyzer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      db: undefined,
       currentPage: 'by-date',
     };
     this.changePage = this.changePage.bind(this);
   }
 
+  componentDidMount() {
+    co(this.initDatabase('logs')).catch(onerror);
+  }
+
+  * initDatabase(dbname) {
+    console.log('[LogAnalyzer.initDb] Init DB starting');
+
+    // connect to the database
+    const db = yield* DB.connectDb(dbname);
+
+    this.setState({ db });
+    console.log(`[LogAnalyzer.initDb] Mounted db: ${JSON.stringify(db.config.db)}`);
+    console.log('[LogAnalyzer.initDb] Init DB ending');
+  }
+
   changePage(id) {
-    console.log(`[LogAnalyzer changePage] changing page to :${id}`);
+    console.log(`[LogAnalyzer.changePage] changing page to :${id}`);
     this.setState({ currentPage: id });
   }
 
@@ -26,9 +45,9 @@ export default class LogAnalyzer extends React.Component {
           initialPage={this.state.currentPage}
         />
         { (this.state.currentPage === 'by-person') ?
-          <ByPersonTableContainer /> : null }
+          <ByPersonTableContainer db={this.state.db} /> : null }
         { (this.state.currentPage === 'by-activity') ?
-          <ByActivityTableContainer /> : null }
+          <ByActivityTableContainer db={this.state.db} /> : null }
       </div>
     );
   }
