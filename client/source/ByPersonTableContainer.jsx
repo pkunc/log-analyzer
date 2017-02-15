@@ -1,5 +1,6 @@
 import React from 'react';
-import Switch from './Switch';
+import PersonListSelector from './PersonListSelector';
+import PersonChoiceSelector from './PersonChoiceSelector';
 
 const Griddle = require('griddle-react');
 const access = require('../../lib/dbAccess.js');
@@ -25,11 +26,13 @@ export default class ByPersonTableContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected: '',
+      selectedPersonChoice: '',
+      selectedPerson: '',
       data: [],
       options: [],
     };
     this.updateSelected = this.updateSelected.bind(this);
+    this.updateSelectedChoice = this.updateSelectedChoice.bind(this);
     this.fetchOptions = this.fetchOptions.bind(this);
     this.fetchData = this.fetchData.bind(this);
   }
@@ -50,18 +53,23 @@ export default class ByPersonTableContainer extends React.Component {
     console.log('[byPerson.fetchOptions] Init DB ending');
   }
 
-  * fetchData(selected) {
-    console.log(`[byPerson.fetchData] Will fetch data from database "${this.props.db.config.db}" for string "${selected}"`);
-    const data = yield co(access.getActivity(this.props.db, selected)).catch(onerror);
+  * fetchData(selectedPerson) {
+    console.log(`[byPerson.fetchData] Will fetch data from database "${this.props.db.config.db}" for string "${selectedPerson}"`);
+    const data = yield co(access.getActivity(this.props.db, selectedPerson)).catch(onerror);
     // console.log(`[byPerson.fetchData] Fetched data: ${JSON.stringify(data)}`);
     this.setState({ data });
     // console.log(`[byPerson.fetchData] this.state.data is now: ${JSON.stringify(this.state.data)}`);
   }
 
-  updateSelected(selected) {
-    console.log(`[byPerson.updateSelected] Setting selected to: ${selected}`);
-    this.setState({ selected });
-    co(this.fetchData(selected)).catch(onerror);
+  updateSelected(selectedPerson) {
+    console.log(`[byPerson.updateSelected] Setting selected person to: ${selectedPerson}`);
+    this.setState({ selectedPerson });
+    co(this.fetchData(selectedPerson)).catch(onerror);
+  }
+
+  updateSelectedChoice(selectedPersonChoice) {
+    console.log(`[byPerson.updateSelectedChoice] Setting choice to: ${selectedPersonChoice}`);
+    this.setState({ selectedPersonChoice });
   }
 
   render() {
@@ -86,8 +94,25 @@ export default class ByPersonTableContainer extends React.Component {
     ];
     return (
       <div>
-        <p>Showing activities for user: <em>{this.state.selected}</em></p>
-        <Switch options={this.state.options} selected={this.state.selected} updateSelected={this.updateSelected} />
+        <p>Choice is: <em>{this.state.selectedPersonChoice}</em></p>
+        <p>Showing activities for user: <em>{this.state.selectedPerson}</em></p>
+        <PersonChoiceSelector options={['typeahead', 'list']} selected={this.state.selectedPersonChoice} updateSelected={this.updateSelectedChoice} />
+        { (this.state.selectedPersonChoice === 'list') ?
+          <div>
+            <PersonListSelector
+              options={this.state.options}
+              selected={this.state.selectedPerson}
+              updateSelected={this.updateSelected}
+            />
+          </div>
+           : null
+        }
+        { (this.state.selectedPersonChoice === 'typeahead') ?
+          <div>
+            Form
+          </div>
+           : null
+        }
         <br />
         <Griddle
           results={this.state.data}

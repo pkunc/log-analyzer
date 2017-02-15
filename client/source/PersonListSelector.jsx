@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class Switch extends React.Component {
+export default class PersonListSelector extends React.Component {
   static propTypes = {
     options: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
     selected: React.PropTypes.string.isRequired,
@@ -15,7 +15,7 @@ export default class Switch extends React.Component {
 
   handleChange(event) {
     const newSelected = event.target.value;
-    console.log(`[switch.handleChange] Selected: ${newSelected}`);
+    console.log(`[PersonListSelector.handleChange] Selected: ${newSelected}`);
     this.props.updateSelected(newSelected);
   }
 
