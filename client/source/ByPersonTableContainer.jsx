@@ -1,4 +1,5 @@
 import React from 'react';
+import Select from 'react-select';
 import PersonListSelector from './PersonListSelector';
 import PersonChoiceSelector from './PersonChoiceSelector';
 
@@ -30,9 +31,11 @@ export default class ByPersonTableContainer extends React.Component {
       selectedPerson: '',
       data: [],
       options: [],
+      optionsTypeahead: [],
     };
     this.updateSelected = this.updateSelected.bind(this);
     this.updateSelectedChoice = this.updateSelectedChoice.bind(this);
+    this.updateSelectedTypeahead = this.updateSelectedTypeahead.bind(this);
     this.fetchOptions = this.fetchOptions.bind(this);
     this.fetchData = this.fetchData.bind(this);
   }
@@ -49,7 +52,14 @@ export default class ByPersonTableContainer extends React.Component {
     // console.log(`[byPerson.fetchOptions] Fetched results: "${JSON.stringify(result)}"`);
     const options = result.map(({ key, value }) => key);
     // console.log(`[byPerson.fetchOptions] Fetched users: "${JSON.stringify(options)}"`);
-    this.setState({ options });
+    /*
+    const optionsTypeahead = options.map((key) => {
+      return { value: key, label: key };
+    });
+    */
+    const optionsTypeahead = options.map(key => ({ value: key, label: key }));
+    // console.log(`[byPerson.fetchOptions] Typeahead options: "${JSON.stringify(optionsTypeahead)}"`);
+    this.setState({ options, optionsTypeahead });
     console.log('[byPerson.fetchOptions] Init DB ending');
   }
 
@@ -70,6 +80,11 @@ export default class ByPersonTableContainer extends React.Component {
   updateSelectedChoice(selectedPersonChoice) {
     console.log(`[byPerson.updateSelectedChoice] Setting choice to: ${selectedPersonChoice}`);
     this.setState({ selectedPersonChoice });
+  }
+
+  updateSelectedTypeahead(val) {
+    console.log(`[byPerson.updateSelectedTypeahead] Setting selected typeahead value to: ${JSON.stringify(val)}`);
+    this.updateSelected(val.value);
   }
 
   render() {
@@ -94,9 +109,12 @@ export default class ByPersonTableContainer extends React.Component {
     ];
     return (
       <div>
-        <p>Choice is: <em>{this.state.selectedPersonChoice}</em></p>
         <p>Showing activities for user: <em>{this.state.selectedPerson}</em></p>
-        <PersonChoiceSelector options={['typeahead', 'list']} selected={this.state.selectedPersonChoice} updateSelected={this.updateSelectedChoice} />
+        <PersonChoiceSelector
+          options={['typeahead', 'list']}
+          selected={this.state.selectedPersonChoice}
+          updateSelected={this.updateSelectedChoice}
+        />
         { (this.state.selectedPersonChoice === 'list') ?
           <div>
             <PersonListSelector
@@ -109,7 +127,13 @@ export default class ByPersonTableContainer extends React.Component {
         }
         { (this.state.selectedPersonChoice === 'typeahead') ?
           <div>
-            Form
+            <Select
+              name="select-person-typeahead"
+              value={this.state.selectedPerson}
+              options={this.state.optionsTypeahead}
+              onChange={this.updateSelectedTypeahead}
+              clearable={false}
+            />
           </div>
            : null
         }
