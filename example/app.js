@@ -62,6 +62,25 @@ function* main() {
     console.log(`  ${ativitiesTypes[i].key} ... ${ativitiesTypes[i].value}`);
   }
 
+  // Test for using DB views for printing date of first and last user activities
+  const userLoginDates = yield co(access.getUserDate(dbLogs)).catch(onerror);
+  console.log(chalk.green(`Found ${userLoginDates.length} documents`));
+  for (let i = 0; i < userLoginDates.length; i += 1) {
+    const firstDateString = userLoginDates[i].value.min.toString();
+    const firstDateY = firstDateString.substring(0, 4);
+    const firstDateM = firstDateString.substring(4, 6);
+    const firstDateD = firstDateString.substring(6, 8);
+    const firstDate = new Date(firstDateY, firstDateM-1, firstDateD);
+
+    const lastDateString = userLoginDates[i].value.max.toString();
+    const lastDateY = lastDateString.substring(0, 4);
+    const lastDateM = lastDateString.substring(4, 6);
+    const lastDateD = lastDateString.substring(6, 8);
+    const lastDate = new Date(lastDateY, lastDateM-1, lastDateD);
+
+    console.log(`  ${userLoginDates[i].key} ... ${firstDate.toLocaleDateString()} -- ${lastDate.toLocaleDateString()}`);
+  }
+
   console.log(chalk.blue('Program ending.'));
 }
 
