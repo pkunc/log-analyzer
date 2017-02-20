@@ -45,26 +45,19 @@ export default class ByPersonTableContainer extends React.Component {
   }
 
   * fetchOptions() {
-    console.log('[byPerson.fetchOptions] Init DB starting');
     // fetch names of all users mentioned in database
-    // console.log(`[byPerson.fetchOptions] Will fetch users from database "${this.props.db.config.db}"`);
+    console.log(`[byPerson.fetchOptions] Will fetch users from database "${this.props.db.config.db}"`);
     const result = yield co(access.getUserActions(this.props.db)).catch(onerror);
     // console.log(`[byPerson.fetchOptions] Fetched results: "${JSON.stringify(result)}"`);
     const options = result.map(({ key, value }) => key);
     // console.log(`[byPerson.fetchOptions] Fetched users: "${JSON.stringify(options)}"`);
-    /*
-    const optionsTypeahead = options.map((key) => {
-      return { value: key, label: key };
-    });
-    */
     const optionsTypeahead = options.map(key => ({ value: key, label: key }));
     // console.log(`[byPerson.fetchOptions] Typeahead options: "${JSON.stringify(optionsTypeahead)}"`);
     this.setState({ options, optionsTypeahead });
-    console.log('[byPerson.fetchOptions] Init DB ending');
   }
 
   * fetchData(selectedPerson) {
-    console.log(`[byPerson.fetchData] Will fetch data from database "${this.props.db.config.db}" for string "${selectedPerson}"`);
+    console.log(`[byPerson.fetchData] Will fetch data from database "${this.props.db.config.db}" for user "${selectedPerson}"`);
     const data = yield co(access.getActivity(this.props.db, selectedPerson)).catch(onerror);
     // console.log(`[byPerson.fetchData] Fetched data: ${JSON.stringify(data)}`);
     this.setState({ data });

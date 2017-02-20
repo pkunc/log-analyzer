@@ -19,7 +19,7 @@ export default class MenuTabsContainer extends React.Component {
   tabList = [
     { id: 'by-person', label: 'By Person' },
     { id: 'by-activity', label: 'By Activity' },
-    { id: 'by-date', label: 'By Date' },
+    { id: 'by-person-date', label: 'By Date' },
   ];
 
   changeMenuTab(id) {
