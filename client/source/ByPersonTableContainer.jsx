@@ -101,45 +101,64 @@ export default class ByPersonTableContainer extends React.Component {
       },
     ];
     return (
-      <div>
-        <p>Showing activities for user: <em>{this.state.selectedPerson}</em></p>
-        <PersonChoiceSelector
-          options={['typeahead', 'list']}
-          selected={this.state.selectedPersonChoice}
-          updateSelected={this.updateSelectedChoice}
-        />
-        { (this.state.selectedPersonChoice === 'list') ?
-          <div>
-            <PersonListSelector
-              options={this.state.options}
-              selected={this.state.selectedPerson}
-              updateSelected={this.updateSelected}
-            />
-          </div>
-           : null
-        }
-        { (this.state.selectedPersonChoice === 'typeahead') ?
-          <div>
-            <Select
-              name="select-person-typeahead"
-              value={this.state.selectedPerson}
-              options={this.state.optionsTypeahead}
-              onChange={this.updateSelectedTypeahead}
-              clearable={false}
-            />
-          </div>
-           : null
-        }
+      <div className="row">
         <br />
-        <Griddle
-          results={this.state.data}
-          resultsPerPage={20}
-          showFilter
-          columns={['date', 'email', 'event', 'object']}
-          columnMetadata={columnMetadata}
-          useGriddleStyles={false}
-          tableClassName="table table-bordered table-striped table-hoverd"
-        />
+        <div className="col-md-9">
+          <p className="text-info">Showing activities for user: <em>{this.state.selectedPerson}</em></p>
+          <PersonChoiceSelector
+            options={['typeahead', 'list']}
+            selected={this.state.selectedPersonChoice}
+            updateSelected={this.updateSelectedChoice}
+          />
+          { (this.state.selectedPersonChoice === 'list') ?
+            <div>
+              <PersonListSelector
+                options={this.state.options}
+                selected={this.state.selectedPerson}
+                updateSelected={this.updateSelected}
+              />
+            </div>
+            : null
+          }
+          { (this.state.selectedPersonChoice === 'typeahead') ?
+            <div>
+              <Select
+                name="select-person-typeahead"
+                value={this.state.selectedPerson}
+                options={this.state.optionsTypeahead}
+                onChange={this.updateSelectedTypeahead}
+                clearable={false}
+              />
+            </div>
+            : null
+          }
+          <br />
+          <Griddle
+            results={this.state.data}
+            resultsPerPage={20}
+            showFilter
+            columns={['date', 'email', 'event', 'object']}
+            columnMetadata={columnMetadata}
+            useGriddleStyles={false}
+            tableClassName="table table-bordered table-striped table-hoverd"
+          />
+        </div>
+        <div className="col-md-3">
+          <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>
+          <p>This page shows list of all activities performed by
+            a selected person. You have two option how to select a person:<br />
+            <ol type="a">
+              <li>choose <strong>typeahed</strong> and start typing part of
+                person&apos;s e-mail address</li>
+              <li>chose <strong>list</strong> and select person from the populated
+              list of of users; domain part of e-mail address is not displayed</li>
+            </ol>
+          </p>
+          <p>Use <strong>Filter Results</strong> filed to narrow down
+            the list of activities. Type the name of activity
+            (blog, wiki, login) or the name of content (community name,
+            file name, blog post name).</p>
+        </div>
       </div>
     );
   }

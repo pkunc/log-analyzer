@@ -42,15 +42,26 @@ export default class ByActivityTableContainer extends React.Component {
       },
     ];
     return (
-      <div>
-        <Griddle
-          results={this.state.data}
-          resultsPerPage={20}
-          showFilter
-          columnMetadata={columnMetadata}
-          useGriddleStyles={false}
-          tableClassName="table table-bordered table-striped table-hoverd"
-        />
+      <div className="row">
+        <br />
+        <div className="col-md-9">
+          <Griddle
+            results={this.state.data}
+            resultsPerPage={20}
+            showFilter
+            columnMetadata={columnMetadata}
+            useGriddleStyles={false}
+            tableClassName="table table-bordered table-striped table-hoverd"
+          />
+        </div>
+        <div className="col-md-3">
+          <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>
+          <p>This page shows list of all types of activities that are logged
+            by Connections Cloud system.</p>
+          <p>You can use it as a reference when you need to find event names
+            for specific tasks, like <em>all Wiki related activities </em>
+            or <em>all activities that create a content</em>.</p>
+        </div>
       </div>
     );
   }

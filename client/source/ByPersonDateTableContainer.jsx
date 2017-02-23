@@ -71,15 +71,26 @@ export default class ByPersonDateTableContainer extends React.Component {
       },
     ];
     return (
-      <div>
-        <Griddle
-          results={this.state.data}
-          resultsPerPage={20}
-          showFilter
-          columnMetadata={columnMetadata}
-          useGriddleStyles={false}
-          tableClassName="table table-bordered table-striped table-hoverd"
-        />
+      <div className="row">
+        <br />
+        <div className="col-md-9">
+          <Griddle
+            results={this.state.data}
+            resultsPerPage={20}
+            showFilter
+            columnMetadata={columnMetadata}
+            initialSort="lastLogin"
+            useGriddleStyles={false}
+            tableClassName="table table-bordered table-striped table-hoverd"
+          />
+        </div>
+        <div className="col-md-3">
+          <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>
+          <p>This page shows dates when a person logged into IBM Connections Cloud
+            for the first time and for the last time.</p>
+          <p>The view is sorted by <strong>Last Login</strong> column so
+            you can see people that does not access the system for the long time.</p>
+        </div>
       </div>
     );
   }

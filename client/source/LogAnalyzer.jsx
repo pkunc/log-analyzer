@@ -41,17 +41,18 @@ export default class LogAnalyzer extends React.Component {
   render() {
     return (
       <div>
-        <p>Current page is:{this.state.currentPage}</p>
+        <h1 className="bg-primary" style={{ padding: '16px' }}>Log Analyzer</h1>
+        { /* }<p>Current page is:{this.state.currentPage}</p>{ */ }
         <MenuTabsContainer
           changePage={this.changePage}
           initialPage={this.state.currentPage}
         />
         { (this.state.currentPage === 'by-person') ?
           <ByPersonTableContainer db={this.state.db} /> : null }
-        { (this.state.currentPage === 'by-activity') ?
-          <ByActivityTableContainer db={this.state.db} /> : null }
         { (this.state.currentPage === 'by-person-date') ?
           <ByPersonDateTableContainer db={this.state.db} /> : null }
+        { (this.state.currentPage === 'by-activity') ?
+          <ByActivityTableContainer db={this.state.db} /> : null }
       </div>
     );
   }
