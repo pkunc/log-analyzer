@@ -14,9 +14,9 @@ Querystring.prototype.unescape = function (val) {
   return unescape(val);
 };
 
-import ActionsTableContainer from './ActionsTableContainer';
+import LogAnalyzer from './LogAnalyzer';
 
 ReactDOM.render(
-  <ActionsTableContainer />,
+  <LogAnalyzer />,
   document.getElementById('appJSX'),
 );

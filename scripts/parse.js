@@ -15,7 +15,7 @@ const parse = require('../lib/parseTools.js');
 require('dotenv').config({ path: '../.env' });
 
 let dirName = '';     // directory name from command line attributes
-let doWrites = false; // true = save parsed data into db, false = just dry run, no inserd into db
+let doWritesBool = false; // true = save parsed data into db, false = just dry run, no inserd into db
 
 /**
  * Supporting functions
@@ -76,7 +76,7 @@ function* main() {
   for (const file of files) {
     const filePath = logDir + file;
     console.log(`[loop] Working on file ${filePath} which is type: ${parse.getLogType(filePath)}`);
-    const rowsInserted = yield co(parse.parseLogFile(filePath, dbLogs, doWrites)).catch(onerror);
+    const rowsInserted = yield co(parse.parseLogFile(filePath, dbLogs, doWritesBool)).catch(onerror);
     totalInserted += rowsInserted;
   }
 
@@ -91,13 +91,15 @@ if (!dirName) {
   process.stdout.write('Exiting the process.\n');
   process.exit();
 }
-doWrites = args[1];
+const doWrites = args[1];
 if (!doWrites) {
   process.stdout.write('Please chose whether to save parsed data into database (true) or not (false)\n');
   process.stdout.write('Example: ./parse.js logs true\n');
   process.stdout.write('Exiting the process.\n');
   process.exit();
 }
+// convert string value to boolean
+doWritesBool = doWrites === 'true';
 console.log(`Will parse logs in "${dirName}" directory.`);
 
 co(main).catch(onerror);
