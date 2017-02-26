@@ -42,22 +42,43 @@ function* main() {
   // Test for using DB views for selected user
   // const activities = yield co(access.getUserActions(dbLogs, 'steve.lievens@silvergreen.eu')).catch(onerror);
 
-  // Test for using DB index for all users
-  const activities = yield co(access.getUserActions(dbLogs)).catch(onerror);
+  // Test for using DB views for all users
+  const userActivities = yield co(access.getUserActions(dbLogs)).catch(onerror);
 
   // Print all obtained activities
-  console.log(activities);
+  console.log(userActivities);
 
   // Print all obtained activities and do a simple formatting of the output
-  try {
-    console.log(chalk.green(`Found ${activities.length} documents`));
-    for (let i = 0; i < activities.length; i += 1) {
-      // console.log('  Doc object: %s', activities[i].object);
-      console.log(`  Key: ${activities[i].key} ${activities[i].value}`);
-    }
-  } catch (err) {
-    console.log(`ERROR: ${err.code}`);
-    throw err;
+  console.log(chalk.green(`Found ${userActivities.length} documents`));
+  for (let i = 0; i < userActivities.length; i += 1) {
+    // console.log('  Doc object: %s', userActivities[i].object);
+    console.log(`  ${userActivities[i].key} ... ${userActivities[i].value}`);
+  }
+
+  // Test for using DB views for all activities
+  const ativitiesTypes = yield co(access.getActions(dbLogs)).catch(onerror);
+  console.log(chalk.green(`Found ${ativitiesTypes.length} documents`));
+  for (let i = 0; i < ativitiesTypes.length; i += 1) {
+    console.log(`  ${ativitiesTypes[i].key} ... ${ativitiesTypes[i].value}`);
+  }
+
+  // Test for using DB views for printing date of first and last user activities
+  const userLoginDates = yield co(access.getUserDate(dbLogs)).catch(onerror);
+  console.log(chalk.green(`Found ${userLoginDates.length} documents`));
+  for (let i = 0; i < userLoginDates.length; i += 1) {
+    const firstDateString = userLoginDates[i].value.min.toString();
+    const firstDateY = firstDateString.substring(0, 4);
+    const firstDateM = firstDateString.substring(4, 6);
+    const firstDateD = firstDateString.substring(6, 8);
+    const firstDate = new Date(firstDateY, firstDateM-1, firstDateD);
+
+    const lastDateString = userLoginDates[i].value.max.toString();
+    const lastDateY = lastDateString.substring(0, 4);
+    const lastDateM = lastDateString.substring(4, 6);
+    const lastDateD = lastDateString.substring(6, 8);
+    const lastDate = new Date(lastDateY, lastDateM-1, lastDateD);
+
+    console.log(`  ${userLoginDates[i].key} ... ${firstDate.toLocaleDateString()} -- ${lastDate.toLocaleDateString()}`);
   }
 
   console.log(chalk.blue('Program ending.'));
