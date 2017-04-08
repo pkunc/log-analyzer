@@ -146,14 +146,13 @@ export default class ByPersonTableContainer extends React.Component {
         <div className="col-md-3">
           <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>
           <p>This page shows list of all activities performed by
-            a selected person. You have two option how to select a person:<br />
-            <ol type="a">
-              <li>choose <strong>typeahed</strong> and start typing part of
+            a selected person. You have two option how to select a person:</p>
+          <ol type="a">
+            <li>choose <strong>typeahed</strong> and start typing part of
                 person&apos;s e-mail address</li>
-              <li>chose <strong>list</strong> and select person from the populated
-              list of of users; domain part of e-mail address is not displayed</li>
-            </ol>
-          </p>
+            <li>chose <strong>list</strong> and select person from the populated
+                list of of users; domain part of e-mail address is not displayed</li>
+          </ol>
           <p>Use <strong>Filter Results</strong> filed to narrow down
             the list of activities. Type the name of activity
             (blog, wiki, login) or the name of content (community name,
