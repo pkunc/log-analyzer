@@ -1,4 +1,5 @@
 import React from 'react';
+import ChoiceSelector from './ChoiceSelector';
 
 export default class PersonListSelector extends React.Component {
   static propTypes = {
@@ -9,14 +10,10 @@ export default class PersonListSelector extends React.Component {
 
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.renderOption = this.renderOption.bind(this);
-  }
-
-  handleChange(event) {
-    const newSelected = event.target.value;
-    console.log(`[PersonListSelector.handleChange] Selected: ${newSelected}`);
-    this.props.updateSelected(newSelected);
+    this.state = {
+      optionPairs: [],
+    };
+    this.state.optionPairs = this.props.options.map(key => ({ value: key, label: this.formatOption(key) }));
   }
 
   formatOption(option) {
@@ -30,31 +27,13 @@ export default class PersonListSelector extends React.Component {
     return name;
   }
 
-  renderOption(option) {
-    const isChecked = (this.props.selected === option);
-    return (
-      <label htmlFor={option} key={option} className="radio-inline">
-        <input
-          type="radio"
-          checked={isChecked}
-          value={option}
-          id={option}
-          onChange={this.handleChange}
-        />
-        {this.formatOption(option)}
-      </label>
-    );
-  }
-
   render() {
     return (
-      <div>
-        <form className="form-inline">
-          <div className="form-group">
-            {this.props.options.map(option => this.renderOption(option))}
-          </div>
-        </form>
-      </div>
+      <ChoiceSelector
+        options={this.state.optionPairs}
+        selected={this.props.selected}
+        updateSelected={this.props.updateSelected}
+      />
     );
   }
 }
