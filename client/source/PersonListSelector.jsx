@@ -16,12 +16,6 @@ export default class PersonListSelector extends React.Component {
     this.state.optionPairs = this.props.options.map(key => ({ value: key, label: this.formatOption(key) }));
   }
 
-  handleChange(event) {
-    const newSelected = event.target.value;
-    console.log(`[PersonListSelector.handleChange] Selected: ${newSelected}`);
-    this.props.updateSelected(newSelected);
-  }
-
   formatOption(option) {
     const atPosition = option.indexOf('@');
     if (atPosition === -1) {
