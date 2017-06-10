@@ -17,15 +17,11 @@ const config = {
   // devtool: 'cheap-module-eval-source-map',
   devtool: 'eval-source-map',
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
-      },
-      {
-        test: /\.json$/,
-        loader: 'json',
       },
     ],
   },
@@ -39,7 +35,7 @@ const config = {
 
   resolve: {
     // you can now require('file') instead of require('file.js')
-    extensions: ['', '.js', '.jsx', '.json'],
+    extensions: ['*', '.js', '.jsx', '.json'],
   },
 
   // Following section is needed to parse Cloudant package with webpack
