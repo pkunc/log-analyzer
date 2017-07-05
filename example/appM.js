@@ -27,10 +27,11 @@ function onerror(err) {
 function* main() {
   console.log(chalk.blue('Program starting'));
 
-  // Connect to the database 'logs'
+  // Connect to the database and collection 'logs'
   const { db, collection } = yield* DB.connectDb('logs');
   console.log(`Got handler for database "${db.databaseName}" and collection "${collection.s.name}"`);
 
+  /*
   // Write some documents in bulk
   const resultBulk = yield collection.bulkWrite([
     { insertOne:
@@ -56,6 +57,7 @@ function* main() {
   console.log(`Inserted ${resultMany.insertedCount} documents via insertMany`);
   // console.log('Result of insertMany:');
   // console.log(resultMany);
+  */
 
   // Read some documents from collections "logs"
   const docs = yield collection.find({}).limit(20).toArray();
