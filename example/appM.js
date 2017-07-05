@@ -9,6 +9,7 @@
 const co = require('co');
 const chalk = require('chalk');
 const DB = require('../lib/dbToolsM.js');
+const access = require('../lib/dbAccessM.js');
 
 require('dotenv').config({ path: '../.env' });
 
@@ -59,10 +60,42 @@ function* main() {
   // console.log(resultMany);
   */
 
-  // Read some documents from collections "logs"
-  const docs = yield collection.find({}).limit(20).toArray();
-  console.log('Document in collection:');
-  console.log(docs);
+  // Get all documents from collections "logs"
+  const resultFind = yield collection.find({}).limit(20).toArray();
+  console.log('All documents in collection:');
+  // console.log(resultFind);
+
+  // Get documents with selected "email" field
+  // const resultFindSel = yield collection.find({ email: 'steve.lievens@silvergreen.eu' }).limit(20).toArray();
+  const resultFindSel = yield access.getActivity(collection, 'steve.lievens@silvergreen.eu');
+  console.log('Selected documents in collection:');
+  console.log(resultFindSel);
+
+  // Aggregate output - grouping by single field
+  const resultAggrSimple = yield collection.aggregate([
+    { $group: { _id: '$service', total: { $sum: 1 } } },
+    { $project: { service: '$_id', total: '$total', _id: 0 } },
+  ]).toArray();
+  // console.log('Aggregated output:');
+  // console.log(resultAggrSimple);
+
+  // Aggregate output - grouping by multiple fields
+  const resultAggrMulti = yield collection.aggregate([
+    { $group: { _id: { service: '$service', email: '$email' }, total: { $sum: 1 } } },
+    { $match: { } },
+  ]).toArray();
+  // console.log('Aggregated output:');
+  // console.log(resultAggrMulti);
+
+  // Aggregate output - grouping by Actions
+  const resultAggrAction = yield access.getActions(collection);
+  console.log('Aggregated output:');
+  console.log(resultAggrAction);
+
+  // Aggregate output - grouping by email with min/max values
+  const resultAggrMinMax = yield access.getUserDate(collection);
+  console.log('Aggregated output:');
+  console.log(resultAggrMinMax);
 
   // Close database connection
   db.close();
