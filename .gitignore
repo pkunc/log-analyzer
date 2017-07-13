@@ -6,6 +6,7 @@ scripts/downloadLogsMy.sh
 client/build/bundle.js
 node_modules
 yarn.lock
+package-lock.json
 .env
 .jscsrc
 .jshintrc
