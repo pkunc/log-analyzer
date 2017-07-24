@@ -6,7 +6,6 @@
  * @author Petr Kunc <petr_kunc@cz.ibm.com>
  */
 
-const co = require('co');
 const chalk = require('chalk');
 const DB = require('../lib/dbToolsM.js');
 const access = require('../lib/dbAccessM.js');
@@ -25,11 +24,11 @@ function onerror(err) {
 /**
  * Main App
  */
-function* main() {
+async function main() {
   console.log(chalk.blue('Program starting'));
 
   // Connect to the database and collection 'logs'
-  const { db, collection } = yield* DB.connectDb('logs');
+  const { db, collection } = await DB.connectDb('logs');
   console.log(`Got handler for database "${db.databaseName}" and collection "${collection.s.name}"`);
 
   /*
@@ -61,45 +60,49 @@ function* main() {
   */
 
   // Get all documents from collections "logs"
-  const resultFind = yield collection.find({}).limit(20).toArray();
-  console.log('All documents in collection:');
-  // console.log(resultFind);
+  const resultFind = await collection.find({}).limit(5).toArray();
+  console.log('Documents in collection:');
+  console.log(resultFind);
 
   // Get documents with selected "email" field
-  // const resultFindSel = yield collection.find({ email: 'steve.lievens@silvergreen.eu' }).limit(20).toArray();
-  const resultFindSel = yield access.getActivity(collection, 'steve.lievens@silvergreen.eu');
-  console.log('Selected documents in collection:');
+  // const resultFindSel = await collection.find({ email: 'steve.lievens@silvergreen.eu' }).limit(20).toArray();
+  const resultFindSel = await access.getActivity(collection, 'steve.lievens@silvergreen.eu');
+  console.log('Result of function getActivity:');
   console.log(resultFindSel);
 
   // Aggregate output - grouping by single field
-  const resultAggrSimple = yield collection.aggregate([
+  const resultAggrSimple = await collection.aggregate([
     { $group: { _id: '$service', total: { $sum: 1 } } },
     { $project: { service: '$_id', total: '$total', _id: 0 } },
   ]).toArray();
-  // console.log('Aggregated output:');
-  // console.log(resultAggrSimple);
+  console.log('Aggregated output grouping by single field:');
+  console.log(resultAggrSimple);
 
   // Aggregate output - grouping by multiple fields
-  const resultAggrMulti = yield collection.aggregate([
+  const resultAggrMulti = await collection.aggregate([
     { $group: { _id: { service: '$service', email: '$email' }, total: { $sum: 1 } } },
     { $match: { } },
   ]).toArray();
-  // console.log('Aggregated output:');
-  // console.log(resultAggrMulti);
+  console.log('Aggregated output grouping by multiple fields:');
+  console.log(resultAggrMulti);
 
   // Aggregate output - grouping by Actions
-  const resultAggrAction = yield access.getActions(collection);
-  console.log('Aggregated output:');
+  const resultAggrAction = await access.getActions(collection);
+  console.log('Result of function getActions:');
   console.log(resultAggrAction);
 
   // Aggregate output - grouping by email with min/max values
-  const resultAggrMinMax = yield access.getUserDate(collection);
-  console.log('Aggregated output:');
-  console.log(resultAggrMinMax);
+  try {
+    const resultAggrMinMax = await access.getUserDate(collection);
+    console.log('Result of function getUserDate:');
+    console.log(resultAggrMinMax);
+  } catch (e) {
+    onerror(e);
+  }
 
   // Close database connection
   db.close();
   console.log(chalk.blue('Program ending.'));
 }
 
-co(main).catch(onerror);
+main();
