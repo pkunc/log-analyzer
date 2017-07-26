@@ -3,16 +3,18 @@ const graphql = require('graphql');
 const {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
+  GraphQLID,
+  GraphQLNonNull,
 } = graphql;
 
 // Temporary data type, just for graphiql test
 const LogEntryType = new GraphQLObjectType({
   name: 'LogEntry',
   fields: () => ({
-    id: { type: GraphQLString },
-    firstName: { type: GraphQLString },
-    age: { type: GraphQLInt },
+    _id: { type: new GraphQLNonNull(GraphQLID) },
+    date: { type: GraphQLString },
+    email: { type: GraphQLString },
+    event: { type: GraphQLString },
   }),
 });
 
