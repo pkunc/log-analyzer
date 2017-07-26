@@ -3,6 +3,7 @@ import MenuTabsContainer from './MenuTabsContainer';
 import ByPersonTableContainer from './ByPersonTableContainer';
 import ByActivityTableContainer from './ByActivityTableContainer';
 import ByPersonDateTableContainer from './ByPersonDateTableContainer';
+import ApolloTest from './ApolloTest';
 
 const DB = require('../../lib/dbTools.js');
 const co = require('co');
@@ -53,6 +54,7 @@ export default class LogAnalyzer extends React.Component {
           <ByPersonDateTableContainer db={this.state.db} /> : null }
         { (this.state.currentPage === 'by-activity') ?
           <ByActivityTableContainer db={this.state.db} /> : null }
+        <ApolloTest />
       </div>
     );
   }

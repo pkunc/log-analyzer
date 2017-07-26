@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const expressGraphQL = require('express-graphql');
 const schema = require('./schema/schema');
 const DB = require('../lib/dbToolsM.js');
@@ -21,6 +22,8 @@ async function initDb() {
 
 initDb();
 
+// Enable CORS for all requets
+app.use(cors());
 // Instruct Express to pass on any request made to the '/graphql' route
 // to the GraphQL instance.
 app.use('/graphql', expressGraphQL({
