@@ -29,6 +29,7 @@
     "lodash": "^4.17.4",
     "mongodb": "^2.2.29",
     "react": "^15.6.1",
+    "react-apollo": "^1.4.8",
     "react-dom": "^15.6.1",
     "react-select": "^1.0.0-rc.5",
     "request": "2.76.0",
