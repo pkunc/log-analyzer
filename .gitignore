@@ -4,6 +4,7 @@ scripts/logs-real
 scripts/logs-small
 scripts/downloadLogsMy.sh
 client/build/bundle.js
+client/bundle.js
 node_modules
 yarn.lock
 package-lock.json

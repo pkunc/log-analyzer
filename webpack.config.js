@@ -1,7 +1,8 @@
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-const BUILD_DIR = path.resolve(__dirname, 'client/build');
+const BUILD_DIR = path.resolve(__dirname, 'client');
 const APP_DIR = path.resolve(__dirname, 'client/source');
 const Dotenv = require('dotenv-webpack');
 
@@ -10,7 +11,12 @@ const config = {
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js',
-    publicPath: '/client/build',
+    // uncomment "publicPath" line for
+    //    npm run webpack
+    //    npm run devserver
+    // keep it commented for
+    //    npm run dev
+    // publicPath: '/client',
   },
 
   target: 'web',
@@ -30,6 +36,9 @@ const config = {
     new Dotenv({
       path: './.env', // if not simply .env
       safe: false, // if true, lets load the .env.example file as well
+    }),
+    new HtmlWebpackPlugin({
+      template: 'client/index-dev.html',
     }),
   ],
 

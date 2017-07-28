@@ -26,6 +26,7 @@
     "graphql": "^0.10.3",
     "graphql-tag": "^2.4.2",
     "griddle-react": "^0.7.1",
+    "html-webpack-plugin": "^2.29.0",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.29",
     "react": "^15.6.1",
