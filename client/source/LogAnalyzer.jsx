@@ -54,7 +54,7 @@ export default class LogAnalyzer extends React.Component {
           <ByPersonDateTableContainer db={this.state.db} /> : null }
         { (this.state.currentPage === 'by-activity') ?
           <ByActivityTableContainer db={this.state.db} /> : null }
-        <ApolloTest />
+        <ApolloTest email={'steve.lievens@silvergreen.eu'} />
       </div>
     );
   }

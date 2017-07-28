@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 const graphql = require('graphql');
-const access = require('../../../lib/dbAccessM.js');
+// const access = require('../../../lib/dbAccessM.js');
 
 const {
   GraphQLObjectType,
@@ -35,18 +35,18 @@ const RootQueryType = new GraphQLObjectType({
     },
     logEntries: {
       type: new GraphQLList(LogEntryType),
-      args: { _id: { type: GraphQLID } },
+      args: { email: { type: GraphQLString } },
       async resolve(parentValue, args) {
         // console.log('[RootQuery.logEntries] LogEntry: ', parentValue, args);
         // console.log(`[RootQuery.logEntries] Read GLOBAL credentials DB: ${global.DB.databaseName}, ${global.Logs.s.name}`);
-        // const result = access.getActivity(global.Logs, args._id);
+        // const result = access.getActivity(global.Logs, args.email);
         try {
-          const result = await global.Logs.find({ email: args._id }).toArray();
-          console.log(`[RootQuery.logEntries] Result of query logEntries for user ${args._id}:`);
+          const result = await global.Logs.find({ email: args.email }).toArray();
+          console.log(`[RootQuery.logEntries] Result of query logEntries for user ${args.email}:`);
           console.log(result);
           return (result);
         } catch (err) {
-          console.log(`[RootQuery.logEntries] ERROR while resolving query logEntries for user ${args._id}.`);
+          console.log(`[RootQuery.logEntries] ERROR while resolving query logEntries for user ${args.email}.`);
           throw err;
         }
       },
