@@ -1,13 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import MenuTabs from './MenuTabs';
 
 export default class MenuTabsContainer extends React.Component {
-  static propTypes = {
-    initialPage: React.PropTypes.string.isRequired,
-    changePage: React.PropTypes.func.isRequired,
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -38,3 +34,8 @@ export default class MenuTabsContainer extends React.Component {
     );
   }
 }
+
+MenuTabsContainer.propTypes = {
+  initialPage: PropTypes.string.isRequired,
+  changePage: PropTypes.func.isRequired,
+};

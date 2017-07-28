@@ -1,12 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class ChoiceSelector extends React.Component {
-  static propTypes = {
-    options: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-    selected: React.PropTypes.string.isRequired,
-    updateSelected: React.PropTypes.func.isRequired,
-  }
-
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
@@ -47,3 +42,9 @@ export default class ChoiceSelector extends React.Component {
     );
   }
 }
+
+ChoiceSelector.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selected: PropTypes.string.isRequired,
+  updateSelected: PropTypes.func.isRequired,
+};

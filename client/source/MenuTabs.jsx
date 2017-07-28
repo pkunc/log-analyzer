@@ -1,13 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class MenuTab extends React.Component {
-  static propTypes = {
-    label: React.PropTypes.string.isRequired,
-    isSelected: React.PropTypes.bool.isRequired,
-    id: React.PropTypes.string.isRequired,
-    handleClick: React.PropTypes.func.isRequired,
-  }
-
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
@@ -28,15 +22,16 @@ class MenuTab extends React.Component {
   }
 }
 
+MenuTab.propTypes = {
+  label: PropTypes.string.isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  id: PropTypes.string.isRequired,
+  handleClick: PropTypes.func.isRequired,
+};
+
 // ...................
 
 export default class MenuTabs extends React.Component {
-  static propTypes = {
-    tabList: React.PropTypes.array.isRequired,
-    currentMenuTab: React.PropTypes.string.isRequired,
-    changeMenuTab: React.PropTypes.func.isRequired,
-  }
-
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
@@ -66,3 +61,9 @@ export default class MenuTabs extends React.Component {
   }
 
 }
+
+MenuTabs.propTypes = {
+  tabList: PropTypes.array.isRequired,
+  currentMenuTab: PropTypes.string.isRequired,
+  changeMenuTab: PropTypes.func.isRequired,
+};

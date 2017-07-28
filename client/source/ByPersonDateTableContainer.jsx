@@ -1,13 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Griddle = require('griddle-react');
 const access = require('../../lib/dbAccess.js');
 const co = require('co');
 
 class DateColumn extends React.Component {
-  static propTypes = {
-    data: React.PropTypes.number.isRequired,
-  }
   render() {
     const dateString = this.props.data.toString();
     const dateY = dateString.substring(0, 4);
@@ -21,13 +19,13 @@ class DateColumn extends React.Component {
   }
 }
 
+DateColumn.propTypes = {
+  data: PropTypes.number.isRequired,
+};
+
 // ---------------------------------
 
 export default class ByPersonDateTableContainer extends React.Component {
-  static propTypes = {
-    db: React.PropTypes.object.isRequired,
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -95,3 +93,7 @@ export default class ByPersonDateTableContainer extends React.Component {
     );
   }
 }
+
+ByPersonDateTableContainer.propTypes = {
+  db: PropTypes.object.isRequired,
+};

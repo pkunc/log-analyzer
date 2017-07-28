@@ -1,14 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Griddle = require('griddle-react');
 const access = require('../../lib/dbAccess.js');
 const co = require('co');
 
 export default class ByActivityTableContainer extends React.Component {
-  static propTypes = {
-    db: React.PropTypes.object.isRequired,
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -66,3 +63,7 @@ export default class ByActivityTableContainer extends React.Component {
     );
   }
 }
+
+ByActivityTableContainer.propTypes = {
+  db: PropTypes.object.isRequired,
+};

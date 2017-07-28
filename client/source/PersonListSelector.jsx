@@ -1,13 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ChoiceSelector from './ChoiceSelector';
 
 export default class PersonListSelector extends React.Component {
-  static propTypes = {
-    options: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
-    selected: React.PropTypes.string.isRequired,
-    updateSelected: React.PropTypes.func.isRequired,
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -37,3 +32,9 @@ export default class PersonListSelector extends React.Component {
     );
   }
 }
+
+PersonListSelector.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selected: PropTypes.string.isRequired,
+  updateSelected: PropTypes.func.isRequired,
+};

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Select from 'react-select';
 import PersonListSelector from './PersonListSelector';
 import PersonChoiceSelector from './PersonChoiceSelector';
@@ -8,9 +9,6 @@ const access = require('../../lib/dbAccess.js');
 const co = require('co');
 
 class DateColumn extends React.Component {
-  static propTypes = {
-    data: React.PropTypes.string.isRequired,
-  }
   render() {
     const newDate = new Date(this.props.data);
     return (
@@ -19,11 +17,13 @@ class DateColumn extends React.Component {
   }
 }
 
-export default class ByPersonTableContainer extends React.Component {
-  static propTypes = {
-    db: React.PropTypes.object.isRequired,
-  }
+DateColumn.propTypes = {
+  data: PropTypes.string.isRequired,
+};
 
+// ---------------------------------
+
+export default class ByPersonTableContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -162,3 +162,7 @@ export default class ByPersonTableContainer extends React.Component {
     );
   }
 }
+
+ByPersonTableContainer.propTypes = {
+  db: PropTypes.object.isRequired,
+};
