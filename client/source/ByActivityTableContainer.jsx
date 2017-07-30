@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Griddle, { plugins, RowDefinition, ColumnDefinition } from 'griddle-react';
 
-const Griddle = require('griddle-react');
 const access = require('../../lib/dbAccess.js');
 const co = require('co');
 
@@ -28,28 +28,36 @@ export default class ByActivityTableContainer extends React.Component {
   }
 
   render() {
-    const columnMetadata = [
-      {
-        columnName: 'key',
-        displayName: 'Activity Type',
+    const styleConfig = {
+      icons: {
+        TableHeadingCell: {
+          sortDescendingIcon: '▼',
+          sortAscendingIcon: '▲',
+        },
       },
-      {
-        columnName: 'value',
-        displayName: 'Number of occurencies',
+      classNames: {
+        Row: 'row-class',
+        Table: 'table table-bordered table-striped table-hover',
       },
-    ];
+      styles: {
+      },
+    };
+
     return (
       <div className="row">
         <br />
         <div className="col-md-9">
           <Griddle
-            results={this.state.data}
-            resultsPerPage={20}
-            showFilter
-            columnMetadata={columnMetadata}
-            useGriddleStyles={false}
-            tableClassName="table table-bordered table-striped table-hoverd"
-          />
+            data={this.state.data}
+            plugins={[plugins.LocalPlugin]}
+            pageProperties={{ pageSize: 20 }}
+            styleConfig={styleConfig}
+          >
+            <RowDefinition>
+              <ColumnDefinition id="key" title="Activity Type" />
+              <ColumnDefinition id="value" title="Number of occurencies" />
+            </RowDefinition>
+          </Griddle>
         </div>
         <div className="col-md-3">
           <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>

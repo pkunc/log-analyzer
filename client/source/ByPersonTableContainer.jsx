@@ -1,27 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import Griddle, { plugins, RowDefinition, ColumnDefinition } from 'griddle-react';
 import PersonListSelector from './PersonListSelector';
 import PersonChoiceSelector from './PersonChoiceSelector';
 
-const Griddle = require('griddle-react');
 const access = require('../../lib/dbAccess.js');
 const co = require('co');
-
-class DateColumn extends React.Component {
-  render() {
-    const newDate = new Date(this.props.data);
-    return (
-      <div>{newDate.toString()}</div>
-    );
-  }
-}
-
-DateColumn.propTypes = {
-  data: PropTypes.string.isRequired,
-};
-
-// ---------------------------------
 
 export default class ByPersonTableContainer extends React.Component {
   constructor(props) {
@@ -81,25 +66,26 @@ export default class ByPersonTableContainer extends React.Component {
   }
 
   render() {
-    const columnMetadata = [
-      {
-        columnName: 'date',
-        displayName: 'Date',
-        customComponent: DateColumn,
+    const styleConfig = {
+      icons: {
+        TableHeadingCell: {
+          sortDescendingIcon: '▼',
+          sortAscendingIcon: '▲',
+        },
       },
-      {
-        columnName: 'email',
-        displayName: 'Who',
+      classNames: {
+        Row: 'row-class',
+        Table: 'table table-bordered table-striped table-hover',
       },
-      {
-        columnName: 'event',
-        displayName: 'Action',
+      styles: {
       },
-      {
-        columnName: 'object',
-        displayName: 'Object',
-      },
-    ];
+    };
+    const DateColumn = ({ value }) => {
+      const newDate = new Date(value);
+      return (
+        <span>{newDate.toString()}</span>
+      );
+    };
     return (
       <div className="row">
         <br />
@@ -134,14 +120,19 @@ export default class ByPersonTableContainer extends React.Component {
           }
           <br />
           <Griddle
-            results={this.state.data}
-            resultsPerPage={20}
-            showFilter
-            columns={['date', 'email', 'event', 'object']}
-            columnMetadata={columnMetadata}
-            useGriddleStyles={false}
+            data={this.state.data}
+            plugins={[plugins.LocalPlugin]}
+            pageProperties={{ pageSize: 20 }}
+            styleConfig={styleConfig}
             tableClassName="table table-bordered table-striped table-hoverd"
-          />
+          >
+            <RowDefinition>
+              <ColumnDefinition id="date" title="Date" customComponent={DateColumn} />
+              <ColumnDefinition id="email" title="Who" />
+              <ColumnDefinition id="event" title="Action" />
+              <ColumnDefinition id="object" title="Object" />
+            </RowDefinition>
+          </Griddle>
         </div>
         <div className="col-md-3">
           <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>

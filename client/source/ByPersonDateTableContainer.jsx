@@ -1,29 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Griddle, { plugins, RowDefinition, ColumnDefinition } from 'griddle-react';
 
-const Griddle = require('griddle-react');
 const access = require('../../lib/dbAccess.js');
 const co = require('co');
-
-class DateColumn extends React.Component {
-  render() {
-    const dateString = this.props.data.toString();
-    const dateY = dateString.substring(0, 4);
-    const dateM = dateString.substring(4, 6);
-    const dateD = dateString.substring(6, 8);
-    const date = new Date(dateY, dateM-1, dateD);
-    const newDate = new Date(date);
-    return (
-      <div>{newDate.toLocaleDateString()}</div>
-    );
-  }
-}
-
-DateColumn.propTypes = {
-  data: PropTypes.number.isRequired,
-};
-
-// ---------------------------------
 
 export default class ByPersonDateTableContainer extends React.Component {
   constructor(props) {
@@ -52,35 +32,51 @@ export default class ByPersonDateTableContainer extends React.Component {
   }
 
   render() {
-    const columnMetadata = [
-      {
-        columnName: 'email',
-        displayName: 'Who',
+    const styleConfig = {
+      icons: {
+        TableHeadingCell: {
+          sortDescendingIcon: '▼',
+          sortAscendingIcon: '▲',
+        },
       },
-      {
-        columnName: 'firstLogin',
-        displayName: 'First Login',
-        customComponent: DateColumn,
+      classNames: {
+        Row: 'row-class',
+        Table: 'table table-bordered table-striped table-hover',
       },
-      {
-        columnName: 'lastLogin',
-        displayName: 'Last Login',
-        customComponent: DateColumn,
+      styles: {
       },
+    };
+    const sortProperties = [
+      { id: 'lastLogin', sortAscending: false },
     ];
+    const DateColumn = ({ value }) => {
+      const dateString = value.toString();
+      const dateY = dateString.substring(0, 4);
+      const dateM = dateString.substring(4, 6);
+      const dateD = dateString.substring(6, 8);
+      const date = new Date(dateY, dateM-1, dateD);
+      const newDate = new Date(date);
+      return (
+        <span>{newDate.toLocaleDateString()}</span>
+      );
+    };
     return (
       <div className="row">
         <br />
         <div className="col-md-9">
           <Griddle
-            results={this.state.data}
-            resultsPerPage={20}
-            showFilter
-            columnMetadata={columnMetadata}
-            initialSort="lastLogin"
-            useGriddleStyles={false}
-            tableClassName="table table-bordered table-striped table-hoverd"
-          />
+            data={this.state.data}
+            plugins={[plugins.LocalPlugin]}
+            pageProperties={{ pageSize: 20 }}
+            styleConfig={styleConfig}
+            sortProperties={sortProperties}
+          >
+            <RowDefinition>
+              <ColumnDefinition id="email" title="Who" />
+              <ColumnDefinition id="firstLogin" title="First Login" customComponent={DateColumn} />
+              <ColumnDefinition id="lastLogin" title="Last Login" customComponent={DateColumn} />
+            </RowDefinition>
+          </Griddle>
         </div>
         <div className="col-md-3">
           <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>
