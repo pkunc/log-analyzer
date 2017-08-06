@@ -2,7 +2,8 @@ import React from 'react';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import LogEntriesQuery from './queries/LogEntriesQuery';
+// import LogEntriesQuery from './queries/LogEntriesQuery';
+import LogEntriesQuery from './queries/LogEntriesQuery.gql';
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
