@@ -10,11 +10,13 @@ const {
 } = graphql;
 
 const LogEntryType = require('./log_entry_type');
+const PersonType = require('./person_type');
 
 // Temporary data type, just for graphiql test
 const RootQueryType = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
+
     logEntry: {
       type: LogEntryType,
       args: { _id: { type: GraphQLID } },
@@ -33,6 +35,7 @@ const RootQueryType = new GraphQLObjectType({
         return (result);
       },
     },
+
     logEntries: {
       type: new GraphQLList(LogEntryType),
       args: { email: { type: GraphQLString } },
@@ -51,6 +54,29 @@ const RootQueryType = new GraphQLObjectType({
         }
       },
     },
+
+    persons: {
+      type: new GraphQLList(PersonType),
+      async resolve(parentValue, args) {
+        // console.log('[RootQuery.persons] LogEntry: ', parentValue, args);
+        // console.log(`[RootQuery.persons] Read GLOBAL credentials DB: ${global.DB.databaseName}, ${global.Logs.s.name}`);
+        // const result = access.getActivity(global.Logs, args.email);
+        try {
+          const result = await global.Logs.aggregate([
+            { $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' } } },
+            { $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', _id: 0 } },
+            { $sort: { email: 1 } },
+          ]).toArray();
+          console.log('[RootQuery.persons] Result of query persons:');
+          console.log(result);
+          return (result);
+        } catch (err) {
+          console.log('[RootQuery.persons] ERROR while resolving query persons.');
+          throw err;
+        }
+      },
+    },
+
   },
 });
 

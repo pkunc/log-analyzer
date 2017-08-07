@@ -100,6 +100,15 @@ async function main() {
     onerror(e);
   }
 
+  // Aggregate output - prepare for PersonType
+  const resultPersonType = await collection.aggregate([
+    { $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' } } },
+    { $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', _id: 0 } },
+    { $sort: { email: 1 } },
+  ]).toArray();
+  console.log('Aggregated output - resultPersonType:');
+  console.log(resultPersonType);
+
   // Close database connection
   db.close();
   console.log(chalk.blue('Program ending.'));

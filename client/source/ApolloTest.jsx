@@ -1,15 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-// import LogEntriesQuery from './queries/LogEntriesQuery';
 import LogEntriesQuery from './queries/LogEntriesQuery.gql';
 
+/*
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
     uri: 'http://localhost:4000/graphql',
   }),
 });
+*/
+const client = new ApolloClient();
 
 class ApolloTest extends React.Component {
   constructor(props) {
@@ -99,8 +102,11 @@ class ApolloTest extends React.Component {
   }
 }
 
+ApolloTest.propTypes = {
+  data: PropTypes.object.isRequired,
+};
+
 export default graphql(LogEntriesQuery, {
   // options: (props) => { return { variables: { email: props.email } }; },
   options: props => ({ variables: { email: props.email } }),
 })(ApolloTest);
-// export default ApolloTest;

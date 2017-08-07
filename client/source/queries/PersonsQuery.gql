@@ -1,0 +1,9 @@
+query PersonsQuery {
+  persons {
+    email
+    userId
+    customerId
+    firstLogin
+    lastLogin
+  }
+}
