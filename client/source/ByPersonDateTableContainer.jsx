@@ -1,37 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { graphql } from 'react-apollo';
 import Griddle, { plugins, RowDefinition, ColumnDefinition } from 'griddle-react';
+import PersonsQuery from './queries/PersonsQuery.gql';
 
-const access = require('../../lib/dbAccess.js');
-const co = require('co');
-
-export default class ByPersonDateTableContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      db: undefined,
-      data: [],
-    };
-    this.fetchData = this.fetchData.bind(this);
-  }
-
-  componentDidMount() {
-    co(this.fetchData()).catch(onerror);
-  }
-
-  * fetchData() {
-    console.log(`[byPersonDate.fetchData] Will fetch data from database "${this.props.db.config.db}"`);
-    const result = yield co(access.getUserDate(this.props.db)).catch(onerror);
-    // console.log(`[byPersonDate.fetchData] Fetched data: ${JSON.stringify(result)}`);
-    const data = result.map(({ key, value }) =>
-      ({ email: key, firstLogin: value.min, lastLogin: value.max }),
-    );
-    // console.log(`[byPersonDate.fetchData] Modified data: ${JSON.stringify(data)}`);
-    this.setState({ data });
-    // console.log(`[byPersonDate.fetchData] this.state.data is now: ${JSON.stringify(this.state.data)}`);
-  }
-
+class ByPersonDateTableContainer extends React.Component {
   render() {
+    if (this.props.data.loading) {
+      return (
+        <div>
+          Loading...
+        </div>
+      );
+    }
+
+    // console.log(`[byPerson] Fetched results: "${JSON.stringify(this.props.data.persons)}"`);
+    const personsData = this.props.data.persons.map(({ email, firstLogin, lastLogin }) => ({ email, firstLogin, lastLogin }));
+    // console.log(`[byPerson] Parsed out users: "${JSON.stringify(personsData)}"`);
+
     const styleConfig = {
       icons: {
         TableHeadingCell: {
@@ -50,12 +36,7 @@ export default class ByPersonDateTableContainer extends React.Component {
       { id: 'lastLogin', sortAscending: false },
     ];
     const DateColumn = ({ value }) => {
-      const dateString = value.toString();
-      const dateY = dateString.substring(0, 4);
-      const dateM = dateString.substring(4, 6);
-      const dateD = dateString.substring(6, 8);
-      const date = new Date(dateY, dateM-1, dateD);
-      const newDate = new Date(date);
+      const newDate = new Date(value);
       return (
         <span>{newDate.toLocaleDateString()}</span>
       );
@@ -65,7 +46,7 @@ export default class ByPersonDateTableContainer extends React.Component {
         <br />
         <div className="col-md-9">
           <Griddle
-            data={this.state.data}
+            data={personsData}
             plugins={[plugins.LocalPlugin]}
             pageProperties={{ pageSize: 20 }}
             styleConfig={styleConfig}
@@ -91,5 +72,7 @@ export default class ByPersonDateTableContainer extends React.Component {
 }
 
 ByPersonDateTableContainer.propTypes = {
-  db: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
 };
+
+export default graphql(PersonsQuery)(ByPersonDateTableContainer);

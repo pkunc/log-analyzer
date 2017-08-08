@@ -106,7 +106,6 @@ class ByPersonTableContainer extends React.Component {
 }
 
 ByPersonTableContainer.propTypes = {
-  db: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
 };
 
