@@ -14,7 +14,7 @@ class ByActivityTableContainer extends React.Component {
       );
     }
 
-    console.log(`[byEvent] Fetched results: "${JSON.stringify(this.props.data.events)}"`);
+    // console.log(`[byActivity] Fetched results: "${JSON.stringify(this.props.data.events)}"`);
 
     const styleConfig = {
       icons: {

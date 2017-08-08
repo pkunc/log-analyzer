@@ -70,10 +70,7 @@ const RootQueryType = new GraphQLObjectType({
           ]).toArray();
           // console.log('Aggregated output - resultEventType:');
           // console.log(resultEventType);
-          const flattenResult = result.map(({ action, total }) => {
-            const { service, event } = action;
-            return ({ service, event, occurrences: total });
-          });
+          const flattenResult = result.map(({ action: { service, event }, total }) => ({ service, event, occurrences: total }));
           console.log('[RootQuery.events] Result of query events:');
           console.log(flattenResult);
           return (flattenResult);

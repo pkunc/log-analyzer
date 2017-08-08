@@ -105,10 +105,11 @@ async function main() {
   ]).toArray();
   // console.log('Aggregated output - resultEventType:');
   // console.log(resultEventType);
-  const flattenResultEventType = resultEventType.map(({ action, total }) => {
+  const flattenResultEventType2 = resultEventType.map(({ action, total }) => {
     const { service, event } = action;
     return ({ service, event, occurrences: total });
   });
+  const flattenResultEventType = resultEventType.map(({ action: { service, event }, total }) => ({ service, event, occurrences: total }));
   console.log('Aggregated output flattend - flattenResultEventType:');
   console.log(flattenResultEventType);
 
