@@ -8,7 +8,6 @@
 
 const chalk = require('chalk');
 const DB = require('../lib/dbToolsM.js');
-const access = require('../lib/dbAccessM.js');
 
 require('dotenv').config({ path: '../.env' });
 
@@ -65,9 +64,8 @@ async function main() {
   console.log(resultFind);
 
   // Get documents with selected "email" field
-  // const resultFindSel = await collection.find({ email: 'steve.lievens@silvergreen.eu' }).limit(20).toArray();
-  const resultFindSel = await access.getActivity(collection, 'steve.lievens@silvergreen.eu');
-  console.log('Result of function getActivity:');
+  const resultFindSel = await collection.find({ email: 'steve.lievens@silvergreen.eu' }).limit(20).toArray();
+  console.log('Documents for selected email:');
   console.log(resultFindSel);
 
   // Aggregate output - grouping by single field
@@ -86,28 +84,33 @@ async function main() {
   console.log('Aggregated output grouping by multiple fields:');
   console.log(resultAggrMulti);
 
-  // Aggregate output - grouping by Actions
-  const resultAggrAction = await access.getActions(collection);
-  console.log('Result of function getActions:');
-  console.log(resultAggrAction);
-
-  // Aggregate output - grouping by email with min/max values
+  // Aggregate output - prepare for PersonType
   try {
-    const resultAggrMinMax = await access.getUserDate(collection);
-    console.log('Result of function getUserDate:');
-    console.log(resultAggrMinMax);
+    const resultPersonType = await collection.aggregate([
+      { $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' } } },
+      { $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', _id: 0 } },
+      { $sort: { email: 1 } },
+    ]).toArray();
+    console.log('Aggregated output - resultPersonType:');
+    console.log(resultPersonType);
   } catch (e) {
     onerror(e);
   }
 
-  // Aggregate output - prepare for PersonType
-  const resultPersonType = await collection.aggregate([
-    { $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' } } },
-    { $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', _id: 0 } },
-    { $sort: { email: 1 } },
+  // Aggregate output - prepare for EventType
+  const resultEventType = await collection.aggregate([
+    { $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
+    { $project: { action: '$_id', total: '$total', _id: 0 } },
+    { $sort: { action: 1 } },
   ]).toArray();
-  console.log('Aggregated output - resultPersonType:');
-  console.log(resultPersonType);
+  // console.log('Aggregated output - resultEventType:');
+  // console.log(resultEventType);
+  const flattenResultEventType = resultEventType.map(({ action, total }) => {
+    const { service, event } = action;
+    return ({ service, event, occurrences: total });
+  });
+  console.log('Aggregated output flattend - flattenResultEventType:');
+  console.log(flattenResultEventType);
 
   // Close database connection
   db.close();

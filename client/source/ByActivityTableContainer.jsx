@@ -1,33 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { graphql } from 'react-apollo';
 import Griddle, { plugins, RowDefinition, ColumnDefinition } from 'griddle-react';
+import EventsQuery from './queries/EventsQuery.gql';
 
-const access = require('../../lib/dbAccess.js');
-const co = require('co');
-
-export default class ByActivityTableContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      db: undefined,
-      data: [],
-    };
-    this.fetchData = this.fetchData.bind(this);
-  }
-
-  componentDidMount() {
-    co(this.fetchData()).catch(onerror);
-  }
-
-  * fetchData() {
-    console.log(`[byActivity.fetchData] Will fetch data from database "${this.props.db.config.db}"`);
-    const data = yield co(access.getActions(this.props.db)).catch(onerror);
-    // console.log(`[byActivity.fetchData] Fetched data: ${JSON.stringify(data)}`);
-    this.setState({ data });
-    // console.log(`[byActivity.fetchData] this.state.data is now: ${JSON.stringify(this.state.data)}`);
-  }
-
+class ByActivityTableContainer extends React.Component {
   render() {
+    if (this.props.data.loading) {
+      return (
+        <div>
+          Loading...
+        </div>
+      );
+    }
+
+    console.log(`[byEvent] Fetched results: "${JSON.stringify(this.props.data.events)}"`);
+
     const styleConfig = {
       icons: {
         TableHeadingCell: {
@@ -48,14 +36,15 @@ export default class ByActivityTableContainer extends React.Component {
         <br />
         <div className="col-md-9">
           <Griddle
-            data={this.state.data}
+            data={this.props.data.events}
             plugins={[plugins.LocalPlugin]}
             pageProperties={{ pageSize: 20 }}
             styleConfig={styleConfig}
           >
             <RowDefinition>
-              <ColumnDefinition id="key" title="Activity Type" />
-              <ColumnDefinition id="value" title="Number of occurencies" />
+              <ColumnDefinition id="service" title="Service" />
+              <ColumnDefinition id="event" title="Event" />
+              <ColumnDefinition id="occurrences" title="Number of occurrences" />
             </RowDefinition>
           </Griddle>
         </div>
@@ -73,5 +62,7 @@ export default class ByActivityTableContainer extends React.Component {
 }
 
 ByActivityTableContainer.propTypes = {
-  db: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
 };
+
+export default graphql(EventsQuery)(ByActivityTableContainer);
