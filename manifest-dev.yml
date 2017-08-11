@@ -1,0 +1,6 @@
+---
+applications:
+- name: log-analyzer
+  memory: 1024M
+  host: log-analyzer
+  domain: mybluemix.net

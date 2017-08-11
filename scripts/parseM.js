@@ -40,15 +40,15 @@ function onerror(err) {
 /**
  * Main App
  */
-function* main() {
+async function main() {
   console.log(chalk.blue('Program starting'));
 
   // connect to the database
-  const { db, collection } = yield* DB.connectDb('logs');
+  const { db, collection } = await DB.connectDb('logs');
   console.log(`Got handler for database "${db.databaseName}" and collection "${collection.s.name}"`);
 
   // read log filenames into an array
-  let totalInserted = 0;      // total number of objects sent to DB
+  let totalInserted = 0; // total number of objects sent to DB
   const logDir = `./${dirName}/`;
   const files = fs.readdirSync(logDir);
 
@@ -56,7 +56,7 @@ function* main() {
   for (const file of files) {
     const filePath = logDir + file;
     console.log(`[loop] Working on file ${filePath} which is type: ${parse.getLogType(filePath)}`);
-    const rowsInserted = yield co(parse.parseLogFile(filePath, collection, doWritesBool)).catch(onerror);
+    const rowsInserted = await co(parse.parseLogFile(filePath, collection, doWritesBool)).catch(onerror);
     totalInserted += rowsInserted;
   }
 

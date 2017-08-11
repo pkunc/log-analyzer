@@ -1,8 +1,12 @@
+const path = require('path');
 const express = require('express');
+const webpack = require('webpack');
+const webpackMiddleware = require('webpack-dev-middleware');
 const cors = require('cors');
 const expressGraphQL = require('express-graphql');
 const schema = require('./schema/schema');
 const DB = require('../lib/dbToolsM.js');
+const webpackConfig = require('../webpack.config.js');
 
 const app = express();
 
@@ -31,13 +35,17 @@ app.use('/graphql', expressGraphQL({
   graphiql: true,
 }));
 
-// Webpack runs as a middleware.  If any request comes in for the root route ('/')
-// Webpack will respond with the output of the webpack process: an HTML file and
-// a single bundle.js output of all of our client side Javascript
-const webpackMiddleware = require('webpack-dev-middleware');
-const webpack = require('webpack');
-const webpackConfig = require('../webpack.config.js');
+const isProduction = process.env.NODE_ENV === 'production';
 
-app.use(webpackMiddleware(webpack(webpackConfig), { stats: { colors: true } }));
+if (isProduction) {
+  console.log('Running in a PRODUCTION environment');
+  app.use(express.static('dist'));
+} else {
+  console.log('Running in a DEVELOPMENT environment');
+  // Webpack runs as a middleware.  If any request comes in for the root route ('/')
+  // Webpack will respond with the output of the webpack process: an HTML file and
+  // a single bundle.js output of all of our client side Javascript
+  app.use(webpackMiddleware(webpack(webpackConfig), { stats: { colors: true } }));
+}
 
 module.exports = app;

@@ -3,12 +3,11 @@ scripts/logs/*.gz
 scripts/logs-real
 scripts/logs-small
 scripts/downloadLogsMy.sh
-client/build/bundle.js
-dist/
-node_modules
+node_modules/
 yarn.lock
 package-lock.json
-.env
 .jscsrc
 .jshintrc
 npm-debug.log
+pushToBM-dev.sh
+tailLogs.sh
