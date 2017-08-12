@@ -1,5 +1,5 @@
-const path = require('path');
 const express = require('express');
+const basicAuth = require('express-basic-auth')
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const cors = require('cors');
@@ -26,6 +26,12 @@ async function initDb() {
 
 initDb();
 
+function getUnauthorizedResponse(req) {
+  return req.auth ?
+    (`Credentials '${req.auth.user}:${req.auth.password} rejected`) :
+    'No credentials provided';
+}
+
 // Enable CORS for all requets
 app.use(cors());
 // Instruct Express to pass on any request made to the '/graphql' route
@@ -35,10 +41,19 @@ app.use('/graphql', expressGraphQL({
   graphiql: true,
 }));
 
+// Choose whether to only launch server part (production environment)
+// or whether also rebuild client part in React (dev environment)
 const isProduction = process.env.NODE_ENV === 'production';
 
 if (isProduction) {
   console.log('Running in a PRODUCTION environment');
+  // Enable simple authentication method to access the web application
+  // username: logs, password: silvergreen
+  app.use(basicAuth({
+    users: { logs: 'silvergreen' },
+    challenge: true,
+    unauthorizedResponse: getUnauthorizedResponse,
+  }));
   app.use(express.static('dist'));
 } else {
   console.log('Running in a DEVELOPMENT environment');
