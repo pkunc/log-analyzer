@@ -12,3 +12,4 @@ package-lock.json
 .jscsrc
 .jshintrc
 npm-debug.log
+manifest-dev.yml

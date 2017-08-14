@@ -1,21 +1,19 @@
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 const BUILD_DIR = path.resolve(__dirname, 'dist');
 const APP_DIR = path.resolve(__dirname, 'client/source');
-const Dotenv = require('dotenv-webpack');
 
 const config = {
   entry: ['babel-polyfill', `${APP_DIR}/index.jsx`],
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js',
-    // publicPath: '/dist',
+    publicPath: '/',
   },
 
   target: 'web',
-  // devtool: 'cheap-module-eval-source-map',
-  devtool: 'eval-source-map',
   module: {
     rules: [
       {
@@ -32,12 +30,11 @@ const config = {
   },
 
   plugins: [
-    new Dotenv({
-      path: './.env', // if not simply .env
-      safe: false, // if true, lets load the .env.example file as well
-    }),
     new HtmlWebpackPlugin({
       template: 'client/index-template.html',
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
   ],
 
@@ -56,5 +53,27 @@ const config = {
     __dirname: true,
   },
 };
+
+if (process.env.NODE_ENV === 'production') {
+  config.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      beautify: false,
+      comments: false,
+      compress: {
+        warnings: false,
+        drop_console: true,
+        screw_ie8: true,
+      },
+      sourceMap: true,
+      output: {
+        comments: false,
+        screw_ie8: true,
+      },
+    }),
+  );
+  config.devtool= 'cheap-module-source-map';
+} else {
+  config.devtool= 'eval-source-map';
+}
 
 module.exports = config;

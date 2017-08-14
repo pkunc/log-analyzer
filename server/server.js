@@ -1,5 +1,5 @@
 const express = require('express');
-const basicAuth = require('express-basic-auth')
+const basicAuth = require('express-basic-auth');
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const cors = require('cors');
@@ -22,6 +22,17 @@ async function initDb() {
   } catch (e) {
     console.log(e);
   }
+}
+
+// Check whether MONGO_URL is correctly set.
+// Either in .env (for local dev environment)
+//    or in Bluemix Cloud Foundry application evironment variables
+// Example: MONGO_URL = "mongodb://username:password@mongodb.acme.com:49382/logs" 
+require('dotenv').config({ path: './.env' });
+
+if (!process.env.MONGO_URL) {
+  console.log('Configuration settings MONGO_URL not found, exiting...');
+  process.exit();
 }
 
 initDb();
