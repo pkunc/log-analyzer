@@ -86,7 +86,7 @@ class ByPersonTableContainer extends React.Component {
           <ByPersonTable email={this.state.selectedPerson} />
         </div>
         <div className="col-md-3">
-          <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>
+          <p className="alert alert-info">Info</p>
           <p>This page shows list of all activities performed by
             a selected person. You have two option how to select a person:</p>
           <ol type="a">

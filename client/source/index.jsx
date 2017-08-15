@@ -6,19 +6,11 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 
-/*
-// Workaround for Cloudant in browser
-import { Querystring } from 'request/lib/querystring';
-
-Querystring.prototype.unescape = function (val) {
-  return unescape(val);
-};
-*/
-
-import LogAnalyzer from './LogAnalyzer';
+import App from './App';
 
 const client = new ApolloClient({
   // dataIdFromObject: o => o.id,
@@ -26,7 +18,9 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <LogAnalyzer />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </ApolloProvider>,
   document.getElementById('appJSX'),
 );

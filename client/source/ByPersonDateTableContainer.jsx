@@ -60,7 +60,7 @@ class ByPersonDateTableContainer extends React.Component {
           </Griddle>
         </div>
         <div className="col-md-3">
-          <p className="bg-info text-info" style={{ padding: '8px' }}>Info</p>
+          <p className="alert alert-info">Info</p>
           <p>This page shows dates when a person logged into IBM Connections Cloud
             for the first time and for the last time.</p>
           <p>The view is sorted by <strong>Last Login</strong> column so
