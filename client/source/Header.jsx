@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 const Header = () => (
   <header>
-    <h1 className="bg-primary" style={{ padding: '16px' }}>Log Analyzer</h1>
+    <h1 className="bg-primary text-white" style={{ padding: '16px' }}>Log Analyzer</h1>
     <nav>
       <ul className="nav nav-tabs">
         <li className="nav-item"><NavLink to="/" exact activeClassName="active" className="nav-link">Home</NavLink></li>

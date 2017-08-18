@@ -17,27 +17,24 @@ export default class ChoiceSelector extends React.Component {
   renderOption(option) {
     const isChecked = (this.props.selected === option.value);
     return (
-      <label htmlFor={option.value} key={option.value} className="radio-inline">
+      <label htmlFor={option.value} key={option.value} className="form-check-label">
         <input
           type="radio"
           checked={isChecked}
           value={option.value}
           id={option.value}
           onChange={this.handleChange}
+          className="form-check-input"
         />
-        {option.label}
+        &nbsp;{option.label}
       </label>
     );
   }
 
   render() {
     return (
-      <div>
-        <form className="form-inline">
-          <div className="form-group">
-            {this.props.options.map(option => this.renderOption(option))}
-          </div>
-        </form>
+      <div className="form-check form-check-inline">
+        {this.props.options.map(option => this.renderOption(option))}
       </div>
     );
   }
