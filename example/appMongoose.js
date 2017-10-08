@@ -55,7 +55,7 @@ async function main() {
 		status: 'SUCCESS',
 	}).then(entry => console.log(entry))
 		.catch(err => console.log('Error while creating new entry: ', err));
-*/
+
 	// Store some data into Model (=collection) using async
 	try {
 		const entry = await LogEntry.create({
@@ -68,7 +68,9 @@ async function main() {
 	} catch (e) {
 		onerror(e);
 	}
+*/
 
+/*
 	// Fetch some data from Model using promises
 	console.log('Will fetch some data:');
 	await LogEntry.find({})
@@ -76,11 +78,64 @@ async function main() {
 		.exec((err, results) => console.log(JSON.stringify(results, null, '\t')))
 		.catch(err => console.log('Error while fetching entries: ', err));
 
+
 	// Fetch some data from Model using async
 	console.log('Will fetch some data:');
 	try {
-		const entries = await LogEntry.find({}).limit(10).exec();
-		console.log(JSON.stringify(entries, null, '\t'));
+		const result = await LogEntry.find({}).limit(10).exec();
+		console.log(JSON.stringify(result, null, '\t'));
+	} catch (e) {
+		onerror(e);
+	}
+*/
+
+/*
+	// Prepare for Query resolver: logEntry(_id)
+	console.log('Will fetch some data for logEntry:');
+	try {
+		const result = await LogEntry.findOne({ _id: '59c89746d6fecbd2d0845759' }).exec();
+		console.log(JSON.stringify(result, null, '\t'));
+	} catch (e) {
+		onerror(e);
+	}
+
+	// Prepare for Query resolver: logEntries(email)
+	console.log('Will fetch some data for logEntries:');
+	try {
+		const result = await LogEntry.find({ email: 'petr.kunc@silvergreen.eu' }).limit(10).exec();
+		console.log(JSON.stringify(result, null, '\t'));
+	} catch (e) {
+		onerror(e);
+	}
+
+	// Prepare for Query resolver: events()
+	console.log('Will fetch some data for events:');
+	try {
+		const result = await LogEntry.aggregate([
+			{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
+			{ $project: { action: '$_id', total: '$total', _id: 0 } },
+			{ $sort: { action: 1 } },
+		]).exec();
+		// console.log('Aggregated output - resultEventType:');
+		// console.log(result);
+		const flattenResult = result.map(({ action: { service, event }, total }) => ({ service, event, occurrences: total }));
+		console.log(JSON.stringify(flattenResult, null, '\t'));
+	} catch (e) {
+		onerror(e);
+	}
+
+*/
+
+	// Prepare for Query resolver: person()
+	console.log('Will fetch some data for person:');
+	try {
+		const result = await LogEntry.aggregate([
+			{ $match: { email: 'petr.kunc@silvergreen.eu' } },
+			{ $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' }, count: { $sum: 1 } } },
+			{ $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', numEntries: '$count', _id: 0 } },
+		]).exec();
+		console.log('Aggregated output - resultEventType:');
+		console.log(result[0]);
 	} catch (e) {
 		onerror(e);
 	}

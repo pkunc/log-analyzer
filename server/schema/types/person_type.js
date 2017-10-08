@@ -3,6 +3,7 @@ const graphql = require('graphql');
 const {
 	GraphQLObjectType,
 	GraphQLString,
+	GraphQLInt,
 } = graphql;
 
 // Temporary data type, just for graphiql test
@@ -14,6 +15,7 @@ const PersonType = new GraphQLObjectType({
 		email: { type: GraphQLString },
 		firstLogin: { type: GraphQLString },
 		lastLogin: { type: GraphQLString },
+		numEntries: { type: GraphQLInt },
 	}),
 });
 

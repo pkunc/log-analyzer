@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const path = require('path');
 const cors = require('cors');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const expressGraphQL = require('express-graphql');
 const schema = require('./schema/schema');
 const DB = require('../lib/dbToolsM.js');
@@ -37,7 +37,9 @@ if (!process.env.MONGO_URL) {
 	process.exit();
 }
 
-initDb();
+const dbm = require('../lib/db.js');
+
+// initDb();
 
 function getUnauthorizedResponse(req) {
 	return req.auth ?

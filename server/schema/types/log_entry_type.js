@@ -15,6 +15,7 @@ const LogEntryType = new GraphQLObjectType({
 		date: { type: GraphQLString },
 		email: { type: GraphQLString },
 		event: { type: GraphQLString },
+		status: { type: GraphQLString },
 	}),
 });
 
