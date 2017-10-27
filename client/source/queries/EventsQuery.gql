@@ -1,7 +1,7 @@
 query EventsQuery {
-  events {
-    service
-    event
-    occurrences
-  }
+	events {
+		service
+		event
+		occurrences
+	}
 }

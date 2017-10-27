@@ -7,24 +7,9 @@ const cors = require('cors');
 // const bodyParser = require('body-parser');
 const expressGraphQL = require('express-graphql');
 const schema = require('./schema/schema');
-const DB = require('../lib/dbToolsM.js');
 const webpackConfig = require('../webpack.config.js');
 
 const app = express();
-
-async function initDb() {
-	try {
-		// console.log(`[initDb] Read .env credentials MONGO: ${JSON.stringify(process.env.MONGO_SERVICES)}`);
-		const { db, collection } = await DB.connectDb('logs');
-		console.log(`[initDb] Got handler for database "${db.databaseName}" and collection "${collection.s.name}"`);
-		// console.log(`[initDb] Database handler: ${JSON.stringify(db)}`);
-		global.DB = db;
-		global.Logs = collection;
-		// console.log(`[initDb] Set GLOBAL credentials DB: ${global.DB.databaseName}, ${global.Logs.s.name}`);
-	} catch (e) {
-		console.log(e);
-	}
-}
 
 // Check whether MONGO_URL is correctly set.
 // Either in .env (for local dev environment)
@@ -37,9 +22,7 @@ if (!process.env.MONGO_URL) {
 	process.exit();
 }
 
-const dbm = require('../lib/db.js');
-
-// initDb();
+const db = require('../lib/db.js');
 
 function getUnauthorizedResponse(req) {
 	return req.auth ?

@@ -24,9 +24,7 @@ const RootQueryType = new GraphQLObjectType({
 			args: { _id: { type: GraphQLID } },
 			async resolve(parentValue, args) {
 				// console.log('[RootQuery.logEntry] LogEntry: ', parentValue, args);
-				// console.log(`[RootQuery.logEntry] Read GLOBAL credentials DB: ${global.DB.databaseName}, ${global.Logs.s.name}`);
 				try {
-					// const result = await global.Logs.findOne({ _id: ObjectId(args._id) });
 					const result = await LogEntry.findOne({ _id: args._id }).exec();
 					console.log(`[RootQuery.logEntry] Result of query logEntry for ID="${args._id}":`);
 					console.log(result);
@@ -43,9 +41,7 @@ const RootQueryType = new GraphQLObjectType({
 			args: { email: { type: GraphQLString } },
 			async resolve(parentValue, args) {
 				// console.log('[RootQuery.logEntries] LogEntries: ', parentValue, args);
-				// const result = access.getActivity(global.Logs, args.email);
 				try {
-					// const result = await global.Logs.find({ email: args.email }).toArray();
 					const result = await LogEntry.find({ email: args.email }).exec();
 					console.log(`[RootQuery.logEntries] Result of query logEntries for user ${args.email}:`);
 					console.log(result);
@@ -61,19 +57,12 @@ const RootQueryType = new GraphQLObjectType({
 			type: new GraphQLList(EventType),
 			async resolve(parentValue, args) {
 				// console.log('[RootQuery.persons] Events: ', parentValue, args);
-				// const result = access.getActivity(global.Logs, args.email);
 				try {
-					// const result = await global.Logs.aggregate([
-					// 	{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
-					// 	{ $project: { action: '$_id', total: '$total', _id: 0 } },
-					// 	{ $sort: { action: 1 } },
-					// ]).toArray();
 					const result = await LogEntry.aggregate([
 						{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
 						{ $project: { action: '$_id', total: '$total', _id: 0 } },
 						{ $sort: { action: 1 } },
 					]).exec();
-					// console.log('Aggregated output - resultEventType:');
 					// console.log(result);
 					const flattenResult = result.map(({ action: { service, event }, total }) => ({ service, event, occurrences: total }));
 					console.log('[RootQuery.events] Result of query events:');
@@ -112,11 +101,6 @@ const RootQueryType = new GraphQLObjectType({
 			async resolve(parentValue, args) {
 				// console.log('[RootQuery.persons] Persons: ', parentValue, args);
 				try {
-					// const result = await global.Logs.aggregate([
-					// 	{ $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' }, count: { $sum: 1 } } },
-					// 	{ $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', numEntries: '$count', _id: 0 } },
-					// 	{ $sort: { email: 1 } },
-					// ]).toArray();
 					const result = await LogEntry.aggregate([
 						{ $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' }, count: { $sum: 1 } } },
 						{ $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', numEntries: '$count', _id: 0 } },

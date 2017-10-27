@@ -13,14 +13,14 @@ import { ApolloProvider } from 'react-apollo';
 import App from './App';
 
 const client = new ApolloClient({
-  // dataIdFromObject: o => o.id,
+	// dataIdFromObject: o => o.id,
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </ApolloProvider>,
-  document.getElementById('appJSX'),
+	<ApolloProvider client={client}>
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>
+	</ApolloProvider>,
+	document.getElementById('appJSX'),
 );
