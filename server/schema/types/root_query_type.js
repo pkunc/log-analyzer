@@ -12,6 +12,7 @@ const {
 const LogEntryType = require('./log_entry_type');
 const EventType = require('./event_type');
 const PersonType = require('./person_type');
+const MonthlyLogStatType = require('./monthly_log_stat_type');
 
 const LogEntry = mongoose.model('logEntry');
 
@@ -56,7 +57,7 @@ const RootQueryType = new GraphQLObjectType({
 		events: {
 			type: new GraphQLList(EventType),
 			async resolve(parentValue, args) {
-				// console.log('[RootQuery.persons] Events: ', parentValue, args);
+				// console.log('[RootQuery.events] Events: ', parentValue, args);
 				try {
 					const result = await LogEntry.aggregate([
 						{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
@@ -111,6 +112,41 @@ const RootQueryType = new GraphQLObjectType({
 					return (result);
 				} catch (err) {
 					console.log('[RootQuery.persons] ERROR while resolving query persons.');
+					throw err;
+				}
+			},
+		},
+
+		montlyLogStats: {
+			type: new GraphQLList(MonthlyLogStatType),
+			args: { services: { type: new GraphQLList(GraphQLString) } },
+			async resolve(parentValue, args) {
+				// console.log('[RootQuery.montlyLogStats] montlyLogStats: ', parentValue, args);
+				try {
+					const result = await LogEntry.aggregate([
+						// { $match: { service } },
+						{ $match: { service: { $in: args.services } } },
+						{ $project: { yearmonth: { $substr: ['$date', 0, 7] }, service: '$service', event: '$event' } },
+						{ $group: {
+							_id: { yearmonth: '$yearmonth', service: '$service', event: '$event' },
+							count: { $sum: 1 } },
+						},
+						{ $group: {
+							_id: { yearmonth: '$_id.yearmonth', service: '$_id.service' },
+							events: { $push: { event: '$_id.event', count: '$count' } },
+							count: { $sum: '$count' },
+						} },
+						{ $group: {
+							_id: { service: '$_id.service' },
+							stats: { $push: { yearmonth: '$_id.yearmonth', events: '$events', count: '$count' } },
+							count: { $sum: '$count' },
+						} },
+						{ $project: { service: '$_id.service', stats: 1, count: 1, _id: 0 } },
+					]).exec();
+					console.log(JSON.stringify(result, null, 4));
+					return (result);
+				} catch (err) {
+					console.log('[RootQuery.montlyLogStats] ERROR while resolving query montlyLogStats.');
 					throw err;
 				}
 			},

@@ -124,8 +124,6 @@ async function main() {
 		onerror(e);
 	}
 
-*/
-
 	// Prepare for Query resolver: person()
 	console.log('Will fetch some data for person:');
 	try {
@@ -136,6 +134,36 @@ async function main() {
 		]).exec();
 		console.log('Aggregated output - resultEventType:');
 		console.log(result[0]);
+	} catch (e) {
+		onerror(e);
+	}
+
+*/
+
+	// Prepare for YearMonthCount aggregation for charts
+	console.log('Will fetch some data for YearMonthCount Charts:');
+	try {
+		const result = await LogEntry.aggregate([
+			{ $match: { service: { $in: ['FILES2', 'AUTH', 'WIKIS'] } } },
+			{ $project: { yearmonth: { $substr: ['$date', 0, 7] }, service: '$service', event: '$event' } },
+			{ $group: {
+				_id: { yearmonth: '$yearmonth', service: '$service', event: '$event' },
+				count: { $sum: 1 } },
+			},
+			{ $group: {
+				_id: { yearmonth: '$_id.yearmonth', service: '$_id.service' },
+				events: { $push: { event: '$_id.event', count: '$count' } },
+				count: { $sum: '$count' },
+			} },
+			{ $group: {
+				_id: { service: '$_id.service' },
+				stats: { $push: { yearmonth: '$_id.yearmonth', events: '$events', count: '$count' } },
+				count: { $sum: '$count' },
+			} },
+			{ $project: { service: '$_id.service', stats: 1, count: 1, _id: 0 } },
+		]).limit(20).exec();
+		console.log('Aggregated output - resultEventType:');
+		console.log(JSON.stringify(result, null, 4));
 	} catch (e) {
 		onerror(e);
 	}

@@ -18,6 +18,7 @@
     "react/jsx-indent-props": ["error", "tab"],
     "no-tabs": 0,
     "indent": ["error", "tab"],
+    "no-restricted-syntax": 0,
   },
   "parserOptions": {
     "ecmaVersion": 7,
