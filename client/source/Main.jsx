@@ -4,7 +4,7 @@ import Home from './Home';
 import ByPersonTableContainer from './ByPersonTableContainer';
 import ByPersonDateTableContainer from './ByPersonDateTableContainer';
 import ByActivityTableContainer from './ByActivityTableContainer';
-import ChartDemoContainer from './ChartDemoContainer';
+import ChartTabContainer from './ChartTabContainer';
 
 const Main = () => (
 	<main>
@@ -13,7 +13,7 @@ const Main = () => (
 			<Route path="/person" component={ByPersonTableContainer} />
 			<Route path="/person-date" component={ByPersonDateTableContainer} />
 			<Route path="/activity" component={ByActivityTableContainer} />
-			<Route path="/chart" component={ChartDemoContainer} />
+			<Route path="/chart" component={ChartTabContainer} />
 		</Switch>
 	</main>
 );

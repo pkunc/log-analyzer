@@ -150,16 +150,19 @@ async function main() {
 				_id: { yearmonth: '$yearmonth', service: '$service', event: '$event' },
 				count: { $sum: 1 } },
 			},
+			{ $sort: { '_id.event': 1 } },
 			{ $group: {
 				_id: { yearmonth: '$_id.yearmonth', service: '$_id.service' },
 				events: { $push: { event: '$_id.event', count: '$count' } },
 				count: { $sum: '$count' },
 			} },
+			{ $sort: { '_id.yearmonth': 1 } },
 			{ $group: {
 				_id: { service: '$_id.service' },
 				stats: { $push: { yearmonth: '$_id.yearmonth', events: '$events', count: '$count' } },
 				count: { $sum: '$count' },
 			} },
+			{ $sort: { '_id.service': 1 } },
 			{ $project: { service: '$_id.service', stats: 1, count: 1, _id: 0 } },
 		]).limit(20).exec();
 		console.log('Aggregated output - resultEventType:');
