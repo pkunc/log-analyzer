@@ -6,9 +6,9 @@ class ChartDemo extends React.Component {
 	render() {
 		const chartDataTemp = {};
 		chartDataTemp.labels = this.props.labels;
-		console.log(`[ChartDemo] Chart.js defaults data: "${JSON.stringify(defaults, null, 4)}"`);
-		console.log(`[ChartDemo] Props data: "${JSON.stringify(this.props.datasets, null, 4)}"`);
-		console.log(`[ChartDemo] Parsed out data: "${JSON.stringify(chartDataTemp, null, 4)}"`);
+		// console.log(`[ChartDemo] Chart.js defaults data: "${JSON.stringify(defaults, null, 4)}"`);
+		// console.log(`[ChartDemo] Props data: "${JSON.stringify(this.props.datasets, null, 4)}"`);
+		// console.log(`[ChartDemo] Parsed out data: "${JSON.stringify(chartDataTemp, null, 4)}"`);
 
 		// defaults.global.animation = false;
 
