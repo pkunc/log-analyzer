@@ -1,48 +1,55 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Checkbox } from 'carbon-components-react';
 
 export default class CheckboxSelector extends React.Component {
 	constructor(props) {
 		super(props);
+		this.selectedServices = new Set();
 		this.handleChange = this.handleChange.bind(this);
-		this.renderOption = this.renderOption.bind(this);
 	}
 
-	handleChange(event) {
+	handleChange(checked, id, event) {
 		// event.preventDefault();
-		const newSelected = event.target.value;
-		console.log(`[CheckboxSelector.handleChange] Selected: ${newSelected}`);
-		this.props.updateSelected(newSelected);
+		console.log(`[CheckboxSelector.handleChange] Selected: ${id}`);
+		if (checked) {
+			this.selectedServices.add(id);
+		} else {
+			this.selectedServices.delete(id);
+		}
+		const selectedServicesArray = Array.from(this.selectedServices);
+		this.props.returnSelected(selectedServicesArray);
 	}
 
-	renderOption(option) {
-		const isChecked = (this.props.selected.includes(option.value));
+	renderCheckbox(option) {
+		// const isChecked = (this.props.selected.includes(option.value));
 		return (
-			<label htmlFor={option.value} key={option.value} className="form-check-label">
-				<input
-					type="checkbox"
-					checked={isChecked}
-					value={option.value}
-					id={option.value}
-					onChange={this.handleChange}
-					className="form-check-input"
-				/>
-				&nbsp;{option.label}
-			</label>
+			<Checkbox
+				defaultChecked={false}
+				onChange={this.handleChange}
+				id={option.value}
+				labelText={option.label}
+				iconDescription={option.label}
+				key={option.value}
+			/>
 		);
 	}
 
 	render() {
 		return (
-			<div className="form-check form-check-inline">
-				{this.props.options.map(option => this.renderOption(option))}
-			</div>
+			<fieldset className="bx--fieldset">
+				<legend className="bx--label">
+					{this.props.title}
+				</legend>
+				{this.props.options.map(option => this.renderCheckbox(option))}
+			</fieldset>
 		);
 	}
 }
 
 CheckboxSelector.propTypes = {
+	title: PropTypes.string.isRequired,
 	options: PropTypes.arrayOf(PropTypes.object).isRequired,
 	selected: PropTypes.array.isRequired,
-	updateSelected: PropTypes.func.isRequired,
+	returnSelected: PropTypes.func.isRequired,
 };

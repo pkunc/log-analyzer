@@ -13,14 +13,12 @@ export default class ChartServiceSelector extends React.Component {
 
 	render() {
 		return (
-			<fieldset>
-				<legend>Services</legend>
-				<CheckboxSelector
-					options={this.state.optionPairs}
-					selected={this.props.selected}
-					updateSelected={this.props.updateSelected}
-				/>
-			</fieldset>
+			<CheckboxSelector
+				title="Select services to display"
+				options={this.state.optionPairs}
+				selected={this.props.selected}
+				returnSelected={this.props.returnSelected}
+			/>
 		);
 	}
 }
@@ -28,5 +26,5 @@ export default class ChartServiceSelector extends React.Component {
 ChartServiceSelector.propTypes = {
 	options: PropTypes.arrayOf(PropTypes.string).isRequired,
 	selected: PropTypes.array.isRequired,
-	updateSelected: PropTypes.func.isRequired,
+	returnSelected: PropTypes.func.isRequired,
 };
