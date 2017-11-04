@@ -5,12 +5,12 @@ import { Line } from 'react-chartjs-2';
 import { Loading } from 'carbon-components-react';
 import MontlyLogStatsQuery from './queries/MontlyLogStatsQuery.gql';
 
-const colors = {
-	FILES2: 'red',
-	WIKIS: 'blue',
-	AUTH: 'green',
-	BLOGS: 'yellow',
-};
+const colors = new Map([
+	['FILES2', 'red'],
+	['WIKIS', 'blue'],
+	['AUTH', 'green'],
+	['BLOGS', 'yellow'],
+]);
 
 class ChartDemoContainer extends React.Component {
 	componentDidMount() {
@@ -37,7 +37,7 @@ class ChartDemoContainer extends React.Component {
 				const statsExtracted = stats.map(
 					({ count }) => count);
 				dataset.data = statsExtracted;
-				dataset.borderColor = colors[service];
+				dataset.borderColor = colors.get(service);
 				return dataset;
 			});
 		// console.log(`[ChartDemoContainer] Parsed out datasets: "${JSON.stringify(datasets, null, 4)}"`);

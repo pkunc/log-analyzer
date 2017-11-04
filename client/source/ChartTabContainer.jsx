@@ -21,7 +21,6 @@ class ChartTabContainer extends React.Component {
 	render() {
 		return (
 			<div>
-				<p>[ChartTabContainer]SelectedServices: {this.state.selectedServices}</p>
 				<ChartServiceSelector
 					options={this.services}
 					selected={this.state.selectedServices}
