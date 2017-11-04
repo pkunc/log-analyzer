@@ -16,8 +16,8 @@ cd logs
 # 1. get listing of journal/ directory
 # 2. go through the listing and download each file
 for f in $(curl -l -1 -sS --disable-epsv --ftp-skip-pasv-ip -u $USER:$PASSWORD ftps://$HOST:$PORT/$DIR/) ; do
-    curl -1 -sS --disable-epsv --ftp-skip-pasv-ip -u $USER:$PASSWORD ftps://$HOST:$PORT/$DIR/$f -O;
-  done
+		curl -1 -sS --disable-epsv --ftp-skip-pasv-ip -u $USER:$PASSWORD ftps://$HOST:$PORT/$DIR/$f -O;
+	done
 
 gunzip -f *.gz
 

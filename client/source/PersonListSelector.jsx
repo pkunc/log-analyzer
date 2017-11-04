@@ -1,39 +1,40 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ChoiceSelector from './ChoiceSelector';
 
 export default class PersonListSelector extends React.Component {
-  static propTypes = {
-    options: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
-    selected: React.PropTypes.string.isRequired,
-    updateSelected: React.PropTypes.func.isRequired,
-  }
+	static formatOption(option) {
+		const atPosition = option.indexOf('@');
+		if (atPosition === -1) {
+			return option;
+		} else if (atPosition === 0) {
+			return option;
+		}
+		const name = option.slice(0, atPosition);
+		return name;
+	}
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      optionPairs: [],
-    };
-    this.state.optionPairs = this.props.options.map(key => ({ value: key, label: this.formatOption(key) }));
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			optionPairs: [],
+		};
+		this.state.optionPairs = this.props.options.map(key => ({ value: key, label: PersonListSelector.formatOption(key) }));
+	}
 
-  formatOption(option) {
-    const atPosition = option.indexOf('@');
-    if (atPosition === -1) {
-      return option;
-    } else if (atPosition === 0) {
-      return option;
-    }
-    const name = option.slice(0, atPosition);
-    return name;
-  }
-
-  render() {
-    return (
-      <ChoiceSelector
-        options={this.state.optionPairs}
-        selected={this.props.selected}
-        updateSelected={this.props.updateSelected}
-      />
-    );
-  }
+	render() {
+		return (
+			<ChoiceSelector
+				options={this.state.optionPairs}
+				selected={this.props.selected}
+				updateSelected={this.props.updateSelected}
+			/>
+		);
+	}
 }
+
+PersonListSelector.propTypes = {
+	options: PropTypes.arrayOf(PropTypes.string).isRequired,
+	selected: PropTypes.string.isRequired,
+	updateSelected: PropTypes.func.isRequired,
+};

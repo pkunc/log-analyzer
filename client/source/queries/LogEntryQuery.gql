@@ -1,0 +1,9 @@
+query LogEntryQuery($_id: ID) {
+	logEntry(_id: $_id) {
+		_id
+		date
+		email
+		event
+		status
+	}
+}

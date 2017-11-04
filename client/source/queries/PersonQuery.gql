@@ -1,0 +1,10 @@
+query PersonQuery($email: String) {
+	person(email: $email) {
+		email
+		userId
+		customerId
+		firstLogin
+		lastLogin
+		numEntries
+	}
+}

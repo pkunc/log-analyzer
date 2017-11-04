@@ -1,0 +1,14 @@
+query MontlyLogStatsQuery($services: [String]) {
+  montlyLogStats(services: $services) {
+    service
+    count
+    stats {
+      yearmonth
+      count
+      events {
+        event
+        count
+      }
+    }
+  }
+}

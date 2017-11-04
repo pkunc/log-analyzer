@@ -1,0 +1,8 @@
+query LogEntriesQuery($email: String) {
+	logEntries(email: $email) {
+		_id
+		date
+		email
+		event
+	}
+}

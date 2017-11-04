@@ -1,0 +1,13 @@
+scripts/logs/*.txt
+scripts/logs/*.gz
+scripts/logs-real
+scripts/logs-small
+scripts/downloadLogsMy.sh
+node_modules/
+yarn.lock
+package-lock.json
+.jscsrc
+.jshintrc
+npm-debug.log
+pushToBM-dev.sh
+tailLogs.sh
