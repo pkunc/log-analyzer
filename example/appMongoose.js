@@ -5,9 +5,14 @@
  * Only for testing Mongoose procedures, not needed for production run.
  * @author Petr Kunc <petr_kunc@cz.ibm.com>
  */
+const fetch = require('node-fetch');
+
+global.fetch = fetch;
 
 const mongoose = require('mongoose');
 const chalk = require('chalk');
+const { ApolloClient, createNetworkInterface } = require('apollo-client');
+const gql = require('graphql-tag');
 
 require('dotenv').config({ path: '../.env' });
 require('../server/models');
@@ -31,7 +36,7 @@ async function main() {
 	console.log(chalk.blue('Program starting'));
 
 	const LogEntry = mongoose.model('logEntry');
-/*
+	/*
 	// Store some data into Model (=collection) using callbacks
 	await LogEntry.create({
 		customerId: 'Petr',
@@ -70,7 +75,7 @@ async function main() {
 	}
 */
 
-/*
+	/*
 	// Fetch some data from Model using promises
 	console.log('Will fetch some data:');
 	await LogEntry.find({})
@@ -89,7 +94,7 @@ async function main() {
 	}
 */
 
-/*
+	/*
 	// Prepare for Query resolver: logEntry(_id)
 	console.log('Will fetch some data for logEntry:');
 	try {
@@ -140,32 +145,111 @@ async function main() {
 
 */
 
+	/*
 	// Prepare for YearMonthCount aggregation for charts
 	console.log('Will fetch some data for YearMonthCount Charts:');
 	try {
 		const result = await LogEntry.aggregate([
 			{ $match: { service: { $in: ['FILES2', 'AUTH', 'WIKIS'] } } },
 			{ $project: { yearmonth: { $substr: ['$date', 0, 7] }, service: '$service', event: '$event' } },
-			{ $group: {
-				_id: { yearmonth: '$yearmonth', service: '$service', event: '$event' },
-				count: { $sum: 1 } },
+			{
+				$group: {
+					_id: { yearmonth: '$yearmonth', service: '$service', event: '$event' },
+					count: { $sum: 1 },
+				},
 			},
 			{ $sort: { '_id.event': 1 } },
-			{ $group: {
-				_id: { yearmonth: '$_id.yearmonth', service: '$_id.service' },
-				events: { $push: { event: '$_id.event', count: '$count' } },
-				count: { $sum: '$count' },
-			} },
+			{
+				$group: {
+					_id: { yearmonth: '$_id.yearmonth', service: '$_id.service' },
+					events: { $push: { event: '$_id.event', count: '$count' } },
+					count: { $sum: '$count' },
+				},
+			},
 			{ $sort: { '_id.yearmonth': 1 } },
-			{ $group: {
-				_id: { service: '$_id.service' },
-				stats: { $push: { yearmonth: '$_id.yearmonth', events: '$events', count: '$count' } },
-				count: { $sum: '$count' },
-			} },
+			{
+				$group: {
+					_id: { service: '$_id.service' },
+					stats: { $push: { yearmonth: '$_id.yearmonth', events: '$events', count: '$count' } },
+					count: { $sum: '$count' },
+				},
+			},
 			{ $sort: { '_id.service': 1 } },
-			{ $project: { service: '$_id.service', stats: 1, count: 1, _id: 0 } },
+			{
+				$project: {
+					service: '$_id.service', stats: 1, count: 1, _id: 0,
+				},
+			},
 		]).limit(20).exec();
 		console.log('Aggregated output - resultEventType:');
+		console.log(JSON.stringify(result, null, 4));
+	} catch (e) {
+		onerror(e);
+	}
+*/
+
+	/*
+	// Test ApolloClient when used on server, not in React component
+	const client = new ApolloClient({
+		networkInterface: createNetworkInterface({
+			uri: 'http://localhost:3000/graphql',
+		}),
+	});
+
+	const query = gql`
+	      {
+	        logEntry(_id: "59c89743d6fecbd2d08455f4") {
+	          _id
+	          date
+	          email
+	          event
+	        }
+	      }`;
+
+	const res2 = await client.query({ query });
+	console.log(res2);
+
+	client.query({ query })
+		.then(res3 => res3.data.logEntry)
+		.then(entry => console.log(entry))
+		.catch(error => console.error(error));
+*/
+
+	// Prepare for serviceIntervalStats aggregation for chatbot
+	console.log('Will fetch some data for serviceIntervalStats query:');
+	try {
+		const services = ['FILES2', 'AUTH', 'WIKIS'];
+		// const startDate = '20160913';
+		// const endDate = '20160915';
+		const startDate = '2016-09-14';
+		const endDate = '2016-09-15';
+		const result = await LogEntry.aggregate([
+			{ $match: { service: { $in: services } } },
+			// {
+			// 	$project: {
+			// 		yearmonthdate: {
+			// 			$concat: [
+			// 				{ $substr: ['$date', 0, 4] },
+			// 				{ $substr: ['$date', 5, 2] },
+			// 				{ $substr: ['$date', 8, 2] },
+			// 			],
+			// 		},
+			// 		service: '$service',
+			// 		event: '$event',
+			// 	},
+			// },
+			{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, service: '$service', event: '$event' } },
+			{ $match: { yearmonthdate: { $gte: startDate } } },
+			{ $match: { yearmonthdate: { $lte: endDate } } },
+			{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
+			{
+				$project: {
+					service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0,
+				},
+			},
+			{ $sort: { service: 1, event: 1 } },
+		]).limit(20).exec();
+		console.log('Aggregated output - serviceIntervalStats:');
 		console.log(JSON.stringify(result, null, 4));
 	} catch (e) {
 		onerror(e);
