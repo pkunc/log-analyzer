@@ -3,7 +3,9 @@ query LogEntryQuery($_id: ID) {
 		_id
 		date
 		email
+		service
 		event
+		object
 		status
 	}
 }

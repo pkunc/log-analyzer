@@ -86,16 +86,8 @@ const RootQueryType = new GraphQLObjectType({
 				try {
 					const result = await LogEntry.aggregate([
 						{ $match: { email: args.email } },
-						{
-							$group: {
-								_id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' }, count: { $sum: 1 },
-							},
-						},
-						{
-							$project: {
-								email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', numEntries: '$count', _id: 0,
-							},
-						},
+						{ $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' }, count: { $sum: 1 } } },
+						{ $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', numEntries: '$count', _id: 0 } },
 					]).exec();
 					console.log(`[RootQuery.person] Result of query person for user ${args.email}:`);
 					console.log(result);
@@ -113,16 +105,8 @@ const RootQueryType = new GraphQLObjectType({
 				// console.log('[RootQuery.persons] Persons: ', parentValue, args);
 				try {
 					const result = await LogEntry.aggregate([
-						{
-							$group: {
-								_id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' }, count: { $sum: 1 },
-							},
-						},
-						{
-							$project: {
-								email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', numEntries: '$count', _id: 0,
-							},
-						},
+						{ $group: { _id: '$email', userId: { $min: '$userid' }, customerId: { $min: '$customerid' }, firstLogin: { $min: '$date' }, lastLogin: { $max: '$date' }, count: { $sum: 1 } } },
+						{ $project: { email: '$_id', userId: '$userId', customerId: '$customerId', firstLogin: '$firstLogin', lastLogin: '$lastLogin', numEntries: '$count', _id: 0 } },
 						{ $sort: { email: 1 } },
 					]).exec();
 					console.log('[RootQuery.persons] Result of query persons:');
@@ -168,11 +152,7 @@ const RootQueryType = new GraphQLObjectType({
 							},
 						},
 						{ $sort: { '_id.service': 1 } },
-						{
-							$project: {
-								service: '$_id.service', stats: 1, count: 1, _id: 0,
-							},
-						},
+						{ $project: { service: '$_id.service', stats: 1, count: 1, _id: 0 } },
 					]).exec();
 					console.log(JSON.stringify(result, null, 4));
 					return (result);
@@ -191,7 +171,7 @@ const RootQueryType = new GraphQLObjectType({
 				endDate: { type: GraphQLString },
 			},
 			async resolve(parentValue, args) {
-				// console.log('[RootQuery.serviceIntervalStats] LogEntry: ', parentValue, args);
+				// console.log('[RootQuery.serviceIntervalStats] serviceIntervalStats: ', parentValue, args);
 
 				// If "services" argumet is missing set a deafult one
 				const services = (args.services) ? args.services : ['AUTH'];
@@ -214,11 +194,7 @@ const RootQueryType = new GraphQLObjectType({
 						{ $match: { yearmonthdate: { $gte: startDate } } },
 						{ $match: { yearmonthdate: { $lte: endDate } } },
 						{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
-						{
-							$project: {
-								service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0,
-							},
-						},
+						{ $project: { service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0 } },
 						{ $sort: { service: 1, event: 1 } },
 					]).exec();
 
@@ -229,6 +205,79 @@ const RootQueryType = new GraphQLObjectType({
 				} catch (err) {
 					console.log(`[RootQuery.serviceIntervalStats] ERROR while resolving query serviceIntervalStats for services: "${services}"
 					and between dates: ${startDate} - ${endDate}.`);
+					throw err;
+				}
+			},
+		},
+
+		objects: {
+			type: new GraphQLList(LogEntryType),
+			args: {
+				services: { type: new GraphQLList(GraphQLString) },
+				events: { type: new GraphQLList(GraphQLString) },
+				startDate: { type: GraphQLString },
+				endDate: { type: GraphQLString },
+			},
+			async resolve(parentValue, args) {
+				// console.log('[RootQuery.files] files: ', parentValue, args);
+
+				// If "services" argumet is missing set a deafult one
+				const services = (args.services) ? args.services : ['AUTH'];
+
+				const now = new Date();
+				const today = moment(now).format('YYYY-MM-DD');
+				const nowMinusMonth = moment(now).subtract(10, 'months');
+				const monthAgo = nowMinusMonth.format('YYYY-MM-DD');
+
+				// If "startDate" / "endDate" argumet is missing set a deafult one
+				const startDate = (args.startDate) ? args.startDate : monthAgo;
+				const endDate = (args.endDate) ? args.endDate : today;
+				console.log(`Services: ${services}`);
+				console.log(`StartDate: ${startDate}`);
+				console.log(`EndDate: ${endDate}`);
+
+				try {
+					let result;
+
+					if (args.events && args.events.length > 0) {
+						result = await LogEntry.aggregate([
+							{ $match: { service: { $in: services } } },
+							// the following filter is only if this aggregation sentence
+							{ $match: { event: { $in: args.events } } },
+							{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, object: '$object', service: '$service', event: '$event', email: '$email', date: '$date' } },
+							{ $match: { yearmonthdate: { $gte: startDate } } },
+							{ $match: { yearmonthdate: { $lte: endDate } } },
+							{ $group: { _id: { object: '$object', service: '$service', event: '$event', email: '$email', yearmonthdate: '$yearmonthdate' } } },
+							{ $project: { object: '$_id.object', service: '$_id.service', event: '$_id.event', email: '$_id.email', yearmonthdate: '$_id.yearmonthdate', _id: 0 } },
+							{ $sort: { yearmonthdate: 1, event: 1 } },
+						]).exec();
+					} else {
+						result = await LogEntry.aggregate([
+							{ $match: { service: { $in: services } } },
+							{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, object: '$object', service: '$service', event: '$event', email: '$email', date: '$date' } },
+							{ $match: { yearmonthdate: { $gte: startDate } } },
+							{ $match: { yearmonthdate: { $lte: endDate } } },
+							{ $group: { _id: { object: '$object', service: '$service', event: '$event', email: '$email', yearmonthdate: '$yearmonthdate' } } },
+							{ $project: { object: '$_id.object', service: '$_id.service', event: '$_id.event', email: '$_id.email', yearmonthdate: '$_id.yearmonthdate', _id: 0 } },
+							{ $sort: { yearmonthdate: 1, event: 1 } },
+						]).exec();
+					}
+
+					// const result = await LogEntry.aggregate([
+					// 	{ $match: { service: 'FILES2' } },
+					// 	{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, object: '$object', event: '$event', email: '$email', date: '$date' } },
+					// 	{ $match: { yearmonthdate: { $gte: startDate } } },
+					// 	{ $match: { yearmonthdate: { $lte: endDate } } },
+					// 	{ $group: { _id: { object: '$object', event: '$event', email: '$email', yearmonthdate: '$yearmonthdate' } } },
+					// 	{ $project: { object: '$_id.object', event: '$_id.event', email: '$_id.email', yearmonthdate: '$_id.yearmonthdate', _id: 0 } },
+					// 	{ $sort: { yearmonthdate: 1, event: 1 } },
+					// ]).exec();
+
+					console.log(`[RootQuery.files] Result of query files between dates: ${startDate} - ${endDate}.`);
+					console.log(result);
+					return (result);
+				} catch (err) {
+					console.log(`[RootQuery.files] ERROR while resolving query files between dates: ${startDate} - ${endDate}.`);
 					throw err;
 				}
 			},
