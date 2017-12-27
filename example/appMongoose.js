@@ -215,66 +215,57 @@ async function main() {
 		.catch(error => console.error(error));
 */
 
-	/*
+
 	// Prepare for serviceIntervalStats aggregation for chatbot
 	console.log('Will fetch some data for serviceIntervalStats query:');
 	try {
-		const services = ['FILES2', 'AUTH', 'WIKIS'];
+		// const services = ['FILES2', 'AUTH', 'WIKIS'];
+		const services = ['FILES2'];
+		// const events = ['FILE_DOWNLOADED'];
+		const events = [];
 		const startDate = '2016-09-14';
 		const endDate = '2016-09-15';
-		const result = await LogEntry.aggregate([
-			{ $match: { service: { $in: services } } },
-			// {
-			// 	$project: {
-			// 		yearmonthdate: {
-			// 			$concat: [
-			// 				{ $substr: ['$date', 0, 4] },
-			// 				{ $substr: ['$date', 5, 2] },
-			// 				{ $substr: ['$date', 8, 2] },
-			// 			],
-			// 		},
-			// 		service: '$service',
-			// 		event: '$event',
-			// 	},
-			// },
-			{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, service: '$service', event: '$event' } },
-			{ $match: { yearmonthdate: { $gte: startDate } } },
-			{ $match: { yearmonthdate: { $lte: endDate } } },
-			{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
-			{
-				$project: {
-					service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0,
+		let result;
+
+		if (events && events.length > 0) {
+			result = await LogEntry.aggregate([
+				{ $match: { service: { $in: services } } },
+				// the following filter is only if this aggregation sentence
+				{ $match: { event: { $in: events } } },
+				{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, service: '$service', event: '$event' } },
+				{ $match: { yearmonthdate: { $gte: startDate } } },
+				{ $match: { yearmonthdate: { $lte: endDate } } },
+				{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
+				{
+					$project: {
+						service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0,
+					},
 				},
-			},
-			{ $sort: { service: 1, event: 1 } },
-		]).limit(20).exec();
+				{ $sort: { service: 1, event: 1 } },
+			]).limit(20).exec();
+		} else {
+			result = await LogEntry.aggregate([
+				{ $match: { service: { $in: services } } },
+				{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, service: '$service', event: '$event' } },
+				{ $match: { yearmonthdate: { $gte: startDate } } },
+				{ $match: { yearmonthdate: { $lte: endDate } } },
+				{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
+				{
+					$project: {
+						service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0,
+					},
+				},
+				{ $sort: { service: 1, event: 1 } },
+			]).limit(20).exec();
+		}
 		console.log('Aggregated output - serviceIntervalStats:');
 		console.log(JSON.stringify(result, null, 4));
 	} catch (e) {
 		onerror(e);
 	}
-	*/
 
-	// // Prepare for Query resolver: files(startDate, endDate)
-	// console.log('Will fetch some data for files query:');
-	// try {
-	// 	const startDate = '2017-11-05';
-	// 	const endDate = '2017-11-11';
-	// 	const result = await LogEntry.aggregate([
-	// 		{ $match: { service: 'FILES2' } },
-	// 		{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, object: '$object', event: '$event', email: '$email', date: '$date' } },
-	// 		{ $match: { yearmonthdate: { $gte: startDate } } },
-	// 		{ $match: { yearmonthdate: { $lte: endDate } } },
-	// 		{ $group: { _id: { object: '$object', event: '$event', email: '$email', yearmonthdate: '$yearmonthdate' } } },
-	// 		{ $project: { object: '$_id.object', event: '$_id.event', email: '$_id.email', yearmonthdate: '$_id.yearmonthdate', _id: 0 } },
-	// 		{ $sort: { yearmonthdate: 1, event: 1 } },
-	// 	]).limit(5).exec();
-	// 	console.log('Aggregated output - files:');
-	// 	console.log(JSON.stringify(result, null, 4));
-	// } catch (e) {
-	// 	onerror(e);
-	// }
 
+	/*
 	// Prepare for Query resolver: objects(services, events, startDate, endDate)
 	console.log('Will fetch some data for files objects:');
 	try {
@@ -315,6 +306,7 @@ async function main() {
 	} catch (e) {
 		onerror(e);
 	}
+	*/
 
 	// Close database connection
 	await db.close(() => console.log('Mongoose connection closed.'));

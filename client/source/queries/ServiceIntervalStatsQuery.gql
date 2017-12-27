@@ -1,5 +1,5 @@
-query ServiceIntervalStatsQuery($services: [String], $startDate: String, $endDate: String) {
-  serviceIntervalStats(services: $services, startDate: $startDate, endDate: $endDate) {
+query ServiceIntervalStatsQuery($services: [String], $events: [String], $startDate: String, $endDate: String) {
+  serviceIntervalStats(services: $services, events: $events, startDate: $startDate, endDate: $endDate) {
     service
     event
     occurrences
