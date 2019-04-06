@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const graphql = require('graphql');
+const moment = require('moment');
+
 require('../../models');
 
 const {
@@ -127,22 +129,28 @@ const RootQueryType = new GraphQLObjectType({
 						// { $match: { service } },
 						{ $match: { service: { $in: args.services } } },
 						{ $project: { yearmonth: { $substr: ['$date', 0, 7] }, service: '$service', event: '$event' } },
-						{ $group: {
-							_id: { yearmonth: '$yearmonth', service: '$service', event: '$event' },
-							count: { $sum: 1 } },
+						{
+							$group: {
+								_id: { yearmonth: '$yearmonth', service: '$service', event: '$event' },
+								count: { $sum: 1 },
+							},
 						},
 						{ $sort: { '_id.event': 1 } },
-						{ $group: {
-							_id: { yearmonth: '$_id.yearmonth', service: '$_id.service' },
-							events: { $push: { event: '$_id.event', count: '$count' } },
-							count: { $sum: '$count' },
-						} },
+						{
+							$group: {
+								_id: { yearmonth: '$_id.yearmonth', service: '$_id.service' },
+								events: { $push: { event: '$_id.event', count: '$count' } },
+								count: { $sum: '$count' },
+							},
+						},
 						{ $sort: { '_id.yearmonth': 1 } },
-						{ $group: {
-							_id: { service: '$_id.service' },
-							stats: { $push: { yearmonth: '$_id.yearmonth', events: '$events', count: '$count' } },
-							count: { $sum: '$count' },
-						} },
+						{
+							$group: {
+								_id: { service: '$_id.service' },
+								stats: { $push: { yearmonth: '$_id.yearmonth', events: '$events', count: '$count' } },
+								count: { $sum: '$count' },
+							},
+						},
 						{ $sort: { '_id.service': 1 } },
 						{ $project: { service: '$_id.service', stats: 1, count: 1, _id: 0 } },
 					]).exec();
@@ -150,6 +158,132 @@ const RootQueryType = new GraphQLObjectType({
 					return (result);
 				} catch (err) {
 					console.log('[RootQuery.montlyLogStats] ERROR while resolving query montlyLogStats.');
+					throw err;
+				}
+			},
+		},
+
+		serviceIntervalStats: {
+			type: new GraphQLList(EventType),
+			args: {
+				services: { type: new GraphQLList(GraphQLString) },
+				events: { type: new GraphQLList(GraphQLString) },
+				startDate: { type: GraphQLString },
+				endDate: { type: GraphQLString },
+			},
+			async resolve(parentValue, args) {
+				// console.log('[RootQuery.serviceIntervalStats] serviceIntervalStats: ', parentValue, args);
+
+				// If "services" argumet is missing set a deafult one
+				const services = (args.services) ? args.services : ['AUTH'];
+
+				const now = new Date();
+				const today = moment(now).format('YYYY-MM-DD');
+				const nowMinusMonth = moment(now).subtract(1, 'months');
+				const monthAgo = nowMinusMonth.format('YYYY-MM-DD');
+
+				// If "startDate" / "endDate" argumet is missing set a deafult one
+				const startDate = (args.startDate) ? args.startDate : monthAgo;
+				const endDate = (args.endDate) ? args.endDate : today;
+				console.log(`StartDate: ${startDate}`);
+				console.log(`EndDate: ${endDate}`);
+
+				try {
+					let result;
+
+					if (args.events && args.events.length > 0) {
+						result = await LogEntry.aggregate([
+							{ $match: { service: { $in: services } } },
+							// the following filter is only if this aggregation sentence
+							{ $match: { event: { $in: args.events } } },
+							{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, service: '$service', event: '$event' } },
+							{ $match: { yearmonthdate: { $gte: startDate } } },
+							{ $match: { yearmonthdate: { $lte: endDate } } },
+							{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
+							{ $project: { service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0 } },
+							{ $sort: { service: 1, event: 1 } },
+						]).exec();
+					} else {
+						result = await LogEntry.aggregate([
+							{ $match: { service: { $in: services } } },
+							{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, service: '$service', event: '$event' } },
+							{ $match: { yearmonthdate: { $gte: startDate } } },
+							{ $match: { yearmonthdate: { $lte: endDate } } },
+							{ $group: { _id: { service: '$service', event: '$event' }, total: { $sum: 1 } } },
+							{ $project: { service: '$_id.service', event: '$_id.event', occurrences: '$total', _id: 0 } },
+							{ $sort: { service: 1, event: 1 } },
+						]).exec();
+					}
+					console.log(`[RootQuery.serviceIntervalStats] Result of query serviceIntervalStats for services: "${services}" and events: "${args.events}"
+					and between dates: ${startDate} - ${endDate}.`);
+					console.log(result);
+					return (result);
+				} catch (err) {
+					console.log(`[RootQuery.serviceIntervalStats] ERROR while resolving query serviceIntervalStats for services: "${services}" and events: "${args.events}"
+					and between dates: ${startDate} - ${endDate}.`);
+					throw err;
+				}
+			},
+		},
+
+		objects: {
+			type: new GraphQLList(LogEntryType),
+			args: {
+				services: { type: new GraphQLList(GraphQLString) },
+				events: { type: new GraphQLList(GraphQLString) },
+				startDate: { type: GraphQLString },
+				endDate: { type: GraphQLString },
+			},
+			async resolve(parentValue, args) {
+				// console.log('[RootQuery.files] files: ', parentValue, args);
+
+				// If "services" argumet is missing set a deafult one
+				const services = (args.services) ? args.services : ['AUTH'];
+
+				const now = new Date();
+				const today = moment(now).format('YYYY-MM-DD');
+				const nowMinusMonth = moment(now).subtract(1, 'months');
+				const monthAgo = nowMinusMonth.format('YYYY-MM-DD');
+
+				// If "startDate" / "endDate" argumet is missing set a deafult one
+				const startDate = (args.startDate) ? args.startDate : monthAgo;
+				const endDate = (args.endDate) ? args.endDate : today;
+				console.log(`Services: ${services}`);
+				console.log(`StartDate: ${startDate}`);
+				console.log(`EndDate: ${endDate}`);
+
+				try {
+					let result;
+
+					if (args.events && args.events.length > 0) {
+						result = await LogEntry.aggregate([
+							{ $match: { service: { $in: services } } },
+							// the following filter is only if this aggregation sentence
+							{ $match: { event: { $in: args.events } } },
+							{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, object: '$object', service: '$service', event: '$event', email: '$email', date: '$date' } },
+							{ $match: { yearmonthdate: { $gte: startDate } } },
+							{ $match: { yearmonthdate: { $lte: endDate } } },
+							{ $group: { _id: { object: '$object', service: '$service', event: '$event', email: '$email', yearmonthdate: '$yearmonthdate' } } },
+							{ $project: { object: '$_id.object', service: '$_id.service', event: '$_id.event', email: '$_id.email', yearmonthdate: '$_id.yearmonthdate', _id: 0 } },
+							{ $sort: { yearmonthdate: 1, event: 1 } },
+						]).exec();
+					} else {
+						result = await LogEntry.aggregate([
+							{ $match: { service: { $in: services } } },
+							{ $project: { yearmonthdate: { $substr: ['$date', 0, 10] }, object: '$object', service: '$service', event: '$event', email: '$email', date: '$date' } },
+							{ $match: { yearmonthdate: { $gte: startDate } } },
+							{ $match: { yearmonthdate: { $lte: endDate } } },
+							{ $group: { _id: { object: '$object', service: '$service', event: '$event', email: '$email', yearmonthdate: '$yearmonthdate' } } },
+							{ $project: { object: '$_id.object', service: '$_id.service', event: '$_id.event', email: '$_id.email', yearmonthdate: '$_id.yearmonthdate', _id: 0 } },
+							{ $sort: { yearmonthdate: 1, event: 1 } },
+						]).exec();
+					}
+
+					console.log(`[RootQuery.files] Result of query files between dates: ${startDate} - ${endDate}.`);
+					console.log(result);
+					return (result);
+				} catch (err) {
+					console.log(`[RootQuery.files] ERROR while resolving query files between dates: ${startDate} - ${endDate}.`);
 					throw err;
 				}
 			},

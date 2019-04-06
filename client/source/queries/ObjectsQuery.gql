@@ -1,0 +1,9 @@
+query ObjectsQuery($services: [String], $events: [String], $startDate: String, $endDate: String) {
+  objects(services: $services, events: $events, startDate: $startDate, endDate: $endDate) {
+    yearmonthdate
+    object
+		service
+    event
+    email
+  }
+}

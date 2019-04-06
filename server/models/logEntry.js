@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const LogEntrySchema = new Schema(
 	{
@@ -11,8 +11,11 @@ const LogEntrySchema = new Schema(
 		customerId: { type: String },
 		userId: { type: String },
 		date: { type: String },
+		yearmonthdate: { type: String },
 		email: { type: String },
+		service: { type: String },
 		event: { type: String },
+		object: { type: String },
 		status: { type: String },
 	},
 	{ collection: 'logs' },

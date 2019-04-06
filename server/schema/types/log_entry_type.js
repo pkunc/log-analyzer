@@ -13,8 +13,11 @@ const LogEntryType = new GraphQLObjectType({
 	fields: () => ({
 		_id: { type: new GraphQLNonNull(GraphQLID) },
 		date: { type: GraphQLString },
+		yearmonthdate: { type: GraphQLString },
 		email: { type: GraphQLString },
+		service: { type: GraphQLString },
 		event: { type: GraphQLString },
+		object: { type: GraphQLString },
 		status: { type: GraphQLString },
 	}),
 });

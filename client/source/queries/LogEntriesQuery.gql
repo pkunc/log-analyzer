@@ -4,5 +4,6 @@ query LogEntriesQuery($email: String) {
 		date
 		email
 		event
+		object
 	}
 }
