@@ -54,3 +54,6 @@ In this sample, you can select a user name and then browse/sort/filter activity 
 
 ![Browsig User Activities](/images/browsing-user-activities.png)
 *Image: Simple web application for browsing user activities.*
+
+## License
+The code and associated scripts are licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.html).
